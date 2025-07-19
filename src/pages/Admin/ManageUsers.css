@@ -1,0 +1,37 @@
+.manage-users-container {
+padding: 2rem;
+background-color: #f7f9fb;
+min-height: 100vh;
+}
+
+.manage-users-container h2 {
+margin-bottom: 1.5rem;
+color: #2c3e50;
+}
+
+.users-table {
+width: 100%;
+border-collapse: collapse;
+background-color: #fff;
+box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.users-table th,
+.users-table td {
+padding: 12px 16px;
+text-align: left;
+border-bottom: 1px solid #eee;
+}
+
+.users-table th {
+background-color: #f0f4f8;
+color: #34495e;
+}
+
+.users-table select {
+padding: 6px 10px;
+border: 1px solid #ccc;
+border-radius: 6px;
+background-color: #fdfdfd;
+font-size: 14px;
+}

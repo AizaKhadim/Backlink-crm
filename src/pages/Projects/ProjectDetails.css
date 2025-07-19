@@ -1,0 +1,79 @@
+.project-details {
+padding: 32px;
+font-family: 'Poppins', sans-serif;
+color: #2c3e50;
+background: #f9fafc;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.project-details h2 {
+font-size: 28px;
+margin-bottom: 10px;
+color: #222;
+}
+
+.description {
+font-size: 16px;
+margin-bottom: 24px;
+color: #555;
+}
+
+.detail-row {
+margin-bottom: 16px;
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 15px;
+}
+
+.detail-row a {
+color: #667eea;
+text-decoration: none;
+}
+
+.detail-row a:hover {
+text-decoration: underline;
+}
+
+.progress-bar {
+width: 150px;
+height: 10px;
+background-color: #eee;
+border-radius: 6px;
+overflow: hidden;
+}
+
+.filled {
+height: 100%;
+background: linear-gradient(to right, #667eea, #764ba2);
+transition: width 0.4s ease-in-out;
+}
+
+.progress-text {
+font-size: 13px;
+color: #444;
+margin-left: 8px;
+}
+
+.detail-section {
+margin-top: 30px;
+}
+
+.detail-section h4 {
+font-size: 18px;
+margin-bottom: 10px;
+color: #333;
+}
+
+.detail-section ul {
+list-style-type: none;
+padding-left: 0;
+}
+
+.detail-section li {
+font-size: 15px;
+margin-bottom: 6px;
+display: flex;
+align-items: center;
+}

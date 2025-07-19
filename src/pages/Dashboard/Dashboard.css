@@ -1,0 +1,92 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 30px;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #eef1f6, #f9fafe);
+  min-height: 100vh;
+  color: #1f1f1f;
+}
+
+.dashboard-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #4b4b4b;
+  text-shadow: 1px 1px 2px #ccc;
+  margin-bottom: 10px;
+}
+
+.dashboard-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  flex: 1;
+  min-width: 200px;
+  padding: 25px;
+  border-radius: 18px;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.gradient-card {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.gradient-card2 {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+}
+
+.gradient-card3 {
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+.card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 30px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+  padding: 25px;
+}
+
+.chart-placeholder {
+  height: 220px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.dashboard-activity ul {
+  padding-left: 20px;
+  margin-top: 15px;
+}
+
+.dashboard-activity li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
