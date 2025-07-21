@@ -1,100 +1,84 @@
-.projects-page {
-padding: 32px;
-font-family: 'Poppins', sans-serif;
-color: #2c3e50;
+.project-list-page {
+  padding: 30px;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #eef1f6, #f9fafe);
+  min-height: 100vh;
+  color: #1f1f1f;
 }
 
-.projects-page h2 {
-font-size: 26px;
-font-weight: 600;
-margin-bottom: 24px;
-color: #2c3e50;
+.project-list-page h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4b4b4b;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px #ccc;
 }
 
-.projects-table {
-width: 100%;
-border-collapse: separate;
-border-spacing: 0;
-background: #fff;
-border-radius: 12px;
-overflow: hidden;
-box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+.create-project-link {
+  display: inline-block;
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease;
 }
 
-.projects-table th {
-background: linear-gradient(to right, #667eea, #764ba2);
-color: #fff;
-padding: 16px;
-text-align: left;
-font-size: 15px;
-font-weight: 600;
+.create-project-link:hover {
+  background: linear-gradient(135deg, #556ee6, #6a45a0);
 }
 
-.projects-table td {
-padding: 16px;
-font-size: 15px;
-border-bottom: 1px solid #f1f1f1;
-background-color: #fff;
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
 }
 
-.status-badge {
-padding: 6px 14px;
-border-radius: 20px;
-font-size: 13px;
-font-weight: 500;
-color: #fff;
-text-transform: capitalize;
-display: inline-block;
+.project-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
-.status-badge.in-progress {
-background: #ffc107;
+.project-card:hover {
+  transform: translateY(-5px);
 }
 
-.status-badge.completed {
-background: #28a745;
+.project-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
 }
 
-.status-badge.pending {
-background: #dc3545;
+.project-card p {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 12px;
 }
 
-.progress-bar {
-width: 120px;
-height: 10px;
-background: #eee;
-border-radius: 5px;
-position: relative;
-overflow: hidden;
-margin-top: 6px;
+.view-link {
+  display: inline-block;
+  padding: 8px 14px;
+  font-size: 14px;
+  color: white;
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-.progress-bar .filled {
-height: 100%;
-background: linear-gradient(to right, #667eea, #764ba2);
-border-radius: 5px;
-transition: width 0.4s ease-in-out;
+.view-link:hover {
+  background: linear-gradient(135deg, #36b996, #124e89);
 }
 
-.progress-text {
-font-size: 13px;
-color: #444;
-margin-top: 4px;
-display: inline-block;
-}
-
-.view-btn {
-background: linear-gradient(to right, #667eea, #764ba2);
-color: #fff;
-border: none;
-padding: 8px 16px;
-font-size: 14px;
-border-radius: 8px;
-cursor: pointer;
-transition: all 0.2s ease;
-}
-
-.view-btn:hover {
-transform: translateY(-2px);
-box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+.loading {
+  font-size: 16px;
+  color: #666;
 }

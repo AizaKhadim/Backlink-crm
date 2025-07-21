@@ -9,6 +9,7 @@ import {
 
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
+import ProjectPage from './pages/Projects/ProjectPage';
 
 import Dashboard from './pages/Dashboard/Dashboard';
 import ProjectsList from './pages/Projects/ProjectsList';
@@ -24,6 +25,7 @@ import SignUp from './pages/Auth/Signup';
 import SignIn from './pages/Auth/Signin';
 import HomeScreen from './pages/Homescreen/Homescreen';
 import ManageUsers from './pages/Admin/ManageUsers';
+import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -57,17 +59,22 @@ function AppRoutes() {
       <Route path="/" element={<HomeScreen />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/projects/create" element={<ProjectPage />} />
 
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/projects" element={<ProjectsList />} />
       <Route path="/projects/:id" element={<ProjectDetails />} />
-      <Route path="/backlinks" element={<BacklinkTypes />} />
-      <Route path="/backlinks/:id" element={<BacklinkSheet />} />
+      
+      <Route path="/backlinks" element={<GlobalBacklinks />} />
+
+      
       <Route path="/team" element={<TeamPage />} />
       <Route path="/reports" element={<ReportsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/goals" element={<GoalsPage />} />
       <Route path="/inbox" element={<InboxPage />} />
+      
+
 
       {/* Admin Only Route */}
       <Route

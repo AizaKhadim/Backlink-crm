@@ -1,79 +1,107 @@
-.project-details {
-padding: 32px;
-font-family: 'Poppins', sans-serif;
-color: #2c3e50;
-background: #f9fafc;
-border-radius: 12px;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+.project-details-page {
+  padding: 2rem;
+  background: linear-gradient(135deg, #eef1f6, #f9fafe);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  color: #1f1f1f;
 }
 
-.project-details h2 {
-font-size: 28px;
-margin-bottom: 10px;
-color: #222;
+.project-details-page h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #4b4b4b;
+  text-shadow: 1px 1px 2px #ccc;
 }
 
-.description {
-font-size: 16px;
-margin-bottom: 24px;
-color: #555;
+.project-details-page p {
+  margin-bottom: 2rem;
+  color: #555;
 }
 
-.detail-row {
-margin-bottom: 16px;
-display: flex;
-align-items: center;
-gap: 10px;
-font-size: 15px;
+.category-block {
+  margin-bottom: 2.5rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
 }
 
-.detail-row a {
-color: #667eea;
-text-decoration: none;
+.category-block h4 {
+  margin-bottom: 0.8rem;
+  color: #333;
+  font-size: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
 }
 
-.detail-row a:hover {
-text-decoration: underline;
+.category-block table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-.progress-bar {
-width: 150px;
-height: 10px;
-background-color: #eee;
-border-radius: 6px;
-overflow: hidden;
+.category-block th,
+.category-block td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
 }
 
-.filled {
-height: 100%;
-background: linear-gradient(to right, #667eea, #764ba2);
-transition: width 0.4s ease-in-out;
+.category-block th {
+  background-color: #f1f1f1;
+  font-weight: 600;
 }
 
-.progress-text {
-font-size: 13px;
-color: #444;
-margin-left: 8px;
+.category-block a {
+  color: #007bff;
+  text-decoration: none;
 }
 
-.detail-section {
-margin-top: 30px;
+.category-block a:hover {
+  text-decoration: underline;
 }
 
-.detail-section h4 {
-font-size: 18px;
-margin-bottom: 10px;
-color: #333;
+.backlink-form {
+  margin-top: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 600px;
 }
 
-.detail-section ul {
-list-style-type: none;
-padding-left: 0;
+.backlink-form input,
+.backlink-form select {
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: 'Poppins', sans-serif;
 }
 
-.detail-section li {
-font-size: 15px;
-margin-bottom: 6px;
-display: flex;
-align-items: center;
+.backlink-form button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: fit-content;
+  transition: background-color 0.2s ease;
+}
+
+.backlink-form button:hover {
+  background-color: #218838;
+}
+
+.success-text {
+  color: green;
+  margin-top: 10px;
+  font-weight: 500;
 }
