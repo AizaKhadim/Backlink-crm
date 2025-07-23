@@ -69,16 +69,9 @@
   padding: 25px;
 }
 
-.chart-placeholder {
-  height: 220px;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #444;
-  font-size: 20px;
-  font-weight: 500;
+.chart-wrapper {
+  max-width: 800px;
+  margin: auto;
 }
 
 .dashboard-activity ul {

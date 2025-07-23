@@ -1,63 +1,69 @@
 .project-page {
-  padding: 30px;
+  padding: 40px;
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #eef1f6, #f9fafe);
+  background: linear-gradient(to bottom right, #eaf0fb, #f7faff);
   min-height: 100vh;
-  color: #1f1f1f;
+  color: #2c2c2c;
 }
 
 .project-page h2 {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
-  color: #4b4b4b;
-  margin-bottom: 20px;
-  text-shadow: 1px 1px 2px #ccc;
+  margin-bottom: 24px;
+  color: #444;
 }
 
 .project-form {
   max-width: 600px;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(10px);
-  border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
-  padding: 25px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
 }
 
 .project-form input,
 .project-form textarea {
-  display: block;
   width: 100%;
-  padding: 12px;
-  margin-bottom: 16px;
+  padding: 14px;
+  margin-bottom: 18px;
   font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
   background-color: #fff;
-  font-family: inherit;
 }
 
 .project-form textarea {
-  resize: vertical;
   min-height: 100px;
+  resize: vertical;
 }
 
 .project-form button {
-  background: linear-gradient(135deg, #43cea2, #185a9d);
+  background: linear-gradient(to right, #43cea2, #185a9d);
   color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
   font-weight: 600;
-  padding: 10px 20px;
+  font-size: 14px;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .project-form button:hover {
-  background: linear-gradient(135deg, #36b996, #124e89);
+  background: linear-gradient(to right, #36b996, #124e89);
+  transform: translateY(-1px);
 }
 
-.project-page p {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #333;
+.success-text {
+  color: green;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+.error-text {
+  color: red;
+  margin-top: 12px;
+  font-weight: 500;
 }

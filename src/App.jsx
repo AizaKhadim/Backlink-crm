@@ -14,8 +14,6 @@ import ProjectPage from './pages/Projects/ProjectPage';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ProjectsList from './pages/Projects/ProjectsList';
 import ProjectDetails from './pages/Projects/ProjectDetails';
-import BacklinkTypes from './pages/Backlinks/BacklinkTypes';
-import BacklinkSheet from './pages/Backlinks/BacklinkSheet';
 import TeamPage from './pages/Team/TeamPage';
 import ReportsPage from './pages/Reports/ReportsPage';
 import SettingsPage from './pages/Settings/SettingsPage';

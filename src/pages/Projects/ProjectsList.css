@@ -1,81 +1,83 @@
 .project-list-page {
-  padding: 30px;
+  padding: 40px;
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #eef1f6, #f9fafe);
+  background: linear-gradient(to bottom right, #f7f9fd, #e0ecff);
   min-height: 100vh;
-  color: #1f1f1f;
+  color: #2b2b2b;
 }
 
 .project-list-page h2 {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
-  color: #4b4b4b;
-  margin-bottom: 20px;
-  text-shadow: 1px 1px 2px #ccc;
+  margin-bottom: 25px;
+  color: #3a3a3a;
+  text-shadow: 1px 1px 2px #d8d8d8;
 }
 
 .create-project-link {
   display: inline-block;
-  margin-bottom: 25px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  margin-bottom: 30px;
+  background: linear-gradient(to right, #43cea2, #185a9d);
   color: white;
-  padding: 10px 18px;
-  border-radius: 10px;
+  padding: 12px 22px;
+  border-radius: 12px;
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
 .create-project-link:hover {
-  background: linear-gradient(135deg, #556ee6, #6a45a0);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(67, 206, 162, 0.3);
 }
 
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
 }
 
 .project-card {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
   border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
-  cursor: pointer;
+  padding: 20px 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .project-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
 }
 
 .project-card h3 {
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 10px;
-  color: #333;
+  color: #1a1a1a;
+  margin-bottom: 8px;
 }
 
 .project-card p {
-  font-size: 15px;
+  font-size: 14.5px;
   color: #555;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
-.view-link {
-  display: inline-block;
+.project-card a {
+  background: linear-gradient(to right, #667eea, #764ba2);
   padding: 8px 14px;
   font-size: 14px;
-  color: white;
-  background: linear-gradient(135deg, #43cea2, #185a9d);
   border-radius: 8px;
-  text-decoration: none;
+  color: white;
   font-weight: 500;
+  text-decoration: none;
+  transition: background 0.3s ease;
 }
 
-.view-link:hover {
-  background: linear-gradient(135deg, #36b996, #124e89);
+.project-card a:hover {
+  background: linear-gradient(to right, #5b6ed1, #6a43a0);
 }
 
 .loading {

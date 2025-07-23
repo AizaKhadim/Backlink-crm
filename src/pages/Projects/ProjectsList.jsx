@@ -1,13 +1,14 @@
-// src/pages/Projects/ProjectList.jsx
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Link } from "react-router-dom";
+import { useUser } from "../../context/UserContext"; // 👈 Import role context
 import "./ProjectsList.css";
 
 const ProjectList = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { role } = useUser(); // 👈 Get current user role
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -31,7 +32,12 @@ const ProjectList = () => {
     <div className="project-list">
       <h2>All Projects</h2>
 
-      <Link to="/projects/create" className="create-project-link">➕ Create New Project</Link>
+      {/* ✅ Only show to editor or admin */}
+      {(role === "admin" || role === "editor") && (
+        <Link to="/projects/create" className="create-project-link">
+          ➕ Create New Project
+        </Link>
+      )}
 
       {projects.length === 0 ? (
         <p>No projects yet.</p>

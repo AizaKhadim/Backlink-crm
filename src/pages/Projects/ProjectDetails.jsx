@@ -1,4 +1,3 @@
-// src/pages/Projects/ProjectDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -39,6 +38,7 @@ const ProjectDetails = () => {
   });
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchProjectAndBacklinks = async () => {
@@ -112,6 +112,7 @@ const ProjectDetails = () => {
         notes: "",
       });
       setSuccess("✅ Backlink added!");
+      setShowModal(false);
     } catch (err) {
       console.error("Error adding backlink:", err);
     }
@@ -170,27 +171,36 @@ const ProjectDetails = () => {
 
       {role !== "viewer" && (
         <>
-          <h3>Add New Backlink</h3>
-          <div className="backlink-form">
-            <input name="date" type="date" value={formData.date} onChange={handleInputChange} placeholder="Date" />
-            <input name="website" value={formData.website} onChange={handleInputChange} placeholder="Website" />
-            <input name="da" value={formData.da} onChange={handleInputChange} placeholder="DA (e.g., 40)" />
-            <input name="spamScore" value={formData.spamScore} onChange={handleInputChange} placeholder="Spam Score" />
-            <input name="username" value={formData.username} onChange={handleInputChange} placeholder="Username" />
-            <input name="password" value={formData.password} onChange={handleInputChange} placeholder="Password" />
-            <input name="link" value={formData.link} onChange={handleInputChange} placeholder="Backlink URL" />
-            <textarea name="notes" value={formData.notes} onChange={handleInputChange} placeholder="Notes" />
-            <select name="category" value={formData.category} onChange={handleInputChange}>
-              <option value="">Select Category</option>
-              {backlinkCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-            <button onClick={handleAddBacklink}>Add Backlink</button>
-            {success && <p className="success-text">{success}</p>}
-          </div>
+          <button className="open-modal-btn" onClick={() => setShowModal(true)}>
+            ➕ Add Backlink
+          </button>
+
+          {showModal && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <button className="close-modal-btn" onClick={() => setShowModal(false)}>×</button>
+                <h3>Add New Backlink</h3>
+                <div className="backlink-form">
+                  <input name="date" type="date" value={formData.date} onChange={handleInputChange} />
+                  <input name="website" value={formData.website} onChange={handleInputChange} placeholder="Website" />
+                  <input name="da" value={formData.da} onChange={handleInputChange} placeholder="DA" />
+                  <input name="spamScore" value={formData.spamScore} onChange={handleInputChange} placeholder="Spam Score" />
+                  <input name="username" value={formData.username} onChange={handleInputChange} placeholder="Username" />
+                  <input name="password" value={formData.password} onChange={handleInputChange} placeholder="Password" />
+                  <input name="link" value={formData.link} onChange={handleInputChange} placeholder="Backlink URL" />
+                  <textarea name="notes" value={formData.notes} onChange={handleInputChange} placeholder="Notes" />
+                  <select name="category" value={formData.category} onChange={handleInputChange}>
+                    <option value="">Select Category</option>
+                    {backlinkCategories.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                  <button onClick={handleAddBacklink}>Add Backlink</button>
+                  {success && <p className="success-text">{success}</p>}
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

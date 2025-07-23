@@ -1,103 +1,115 @@
+/* src/pages/GlobalBacklinks.css */
+
 .global-backlinks-page {
-  padding: 30px;
-  background: linear-gradient(135deg, #eef1f6, #f9fafe);
+  padding: 40px;
+  background: linear-gradient(to bottom right, #f7f9fd, #edf2fb);
   min-height: 100vh;
   font-family: 'Poppins', sans-serif;
-  color: #1f1f1f;
+  color: #2a2a2a;
 }
 
 .global-backlinks-page h2 {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   color: #4b4b4b;
-  text-shadow: 1px 1px 2px #ccc;
+  text-shadow: 1px 1px 2px #d4d4d4;
 }
 
 /* Tabs */
 .tabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
 .tab {
-  background-color: #ffffff;
-  border: 2px solid #ccc;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
   font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .tab:hover {
-  background-color: #f1f1f1;
+  background: #e2e8f0;
 }
 
 .tab.active {
-  background-color: #667eea;
-  color: white;
-  border-color: #667eea;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: #fff;
+  font-weight: 600;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 /* Filter Bar */
 .filter-bar {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 25px;
   flex-wrap: wrap;
 }
 
 .search-input,
 .date-filter {
-  padding: 10px 14px;
+  padding: 12px 16px;
   font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  min-width: 200px;
+  border-radius: 12px;
+  min-width: 240px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.2s ease;
 }
 
-/* Table */
+.search-input:focus,
+.date-filter:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+/* Table Styling */
 .backlink-table {
   width: 100%;
-  border-collapse: collapse;
-  background-color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
-  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
 .backlink-table th,
 .backlink-table td {
-  padding: 12px 16px;
+  padding: 14px 18px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .backlink-table th {
-  background-color: #f0f0f0;
+  background: #f5f7fa;
   font-weight: 600;
-  color: #444;
+  color: #333;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
 }
 
 .backlink-table tr:hover {
-  background-color: #f9f9f9;
-}
-
-a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
+  background-color: #f8fbff;
+  transition: background-color 0.3s ease;
 }
 
 /* Status Badge Styles */
 .status {
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
@@ -118,8 +130,14 @@ a:hover {
   background-color: #f8d7da;
   color: #721c24;
 }
-.backlink-table th,
-.backlink-table td {
-  padding: 10px 12px;
-  font-size: 14px;
+
+/* Link */
+a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
 }

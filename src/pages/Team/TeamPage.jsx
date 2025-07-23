@@ -1,4 +1,3 @@
-// src/pages/Team/TeamPage.jsx
 import React, { useEffect, useState } from 'react';
 import './TeamPage.css';
 import { useUser } from '../../context/UserContext';
@@ -6,12 +5,15 @@ import {
   getFirestore,
   collection,
   getDocs,
-  addDoc,
+  doc,
+  setDoc,
   serverTimestamp,
 } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../../firebase';
 
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 const TeamPage = () => {
   const { role } = useUser();
@@ -22,6 +24,7 @@ const TeamPage = () => {
   const [newMember, setNewMember] = useState({
     fullName: '',
     email: '',
+    password: '',
     role: 'viewer',
   });
 
@@ -35,18 +38,30 @@ const TeamPage = () => {
 
   const handleAddMember = async () => {
     try {
-      await addDoc(collection(db, 'users'), {
-        fullName: newMember.fullName,
-        email: newMember.email,
-        role: newMember.role,
+      const { email, password, fullName, role } = newMember;
+      if (!email || !password || !fullName || !role) {
+        alert('Please fill all fields');
+        return;
+      }
+
+      // Create auth account
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Save user data to Firestore
+      await setDoc(doc(db, 'users', uid), {
+        fullName,
+        email,
+        role,
         createdAt: serverTimestamp(),
       });
+
       setShowModal(false);
-      setNewMember({ fullName: '', email: '', role: 'viewer' });
+      setNewMember({ fullName: '', email: '', password: '', role: 'viewer' });
       fetchTeam();
-      alert('Team member added. Share login manually.');
+      alert('✅ Team member added!');
     } catch (err) {
-      alert('Failed to add member');
+      alert('❌ Failed to add member');
       console.error(err);
     }
   };
@@ -117,6 +132,14 @@ const TeamPage = () => {
               value={newMember.email}
               onChange={(e) =>
                 setNewMember({ ...newMember, email: e.target.value })
+              }
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={newMember.password}
+              onChange={(e) =>
+                setNewMember({ ...newMember, password: e.target.value })
               }
             />
             <select
