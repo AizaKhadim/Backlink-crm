@@ -1,4 +1,3 @@
-// src/pages/Reports/ReportsPage.jsx
 import React, { useEffect, useState } from "react";
 import {
   collection,
@@ -6,20 +5,19 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useUser } from "../../context/UserContext";
-import { Bar, Doughnut } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  ArcElement,
   Tooltip,
   Legend
 } from "chart.js";
 import * as XLSX from "xlsx";
 import "./ReportsPage.css";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const categories = [
   "guest posting",
@@ -35,6 +33,7 @@ const ReportsPage = () => {
   const [allBacklinks, setAllBacklinks] = useState([]);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [projectBacklinkCount, setProjectBacklinkCount] = useState({});
   const { role } = useUser();
 
   useEffect(() => {
@@ -42,6 +41,18 @@ const ReportsPage = () => {
       const snap = await getDocs(collection(db, "projects"));
       const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setProjects(list);
+
+      // Fetch backlinks count for each project
+      const counts = {};
+      for (const proj of list) {
+        let total = 0;
+        for (const cat of categories) {
+          const snap = await getDocs(collection(db, "projects", proj.id, cat));
+          total += snap.size;
+        }
+        counts[proj.title] = total;
+      }
+      setProjectBacklinkCount(counts);
     };
     fetchProjects();
   }, []);
@@ -130,9 +141,7 @@ const ReportsPage = () => {
             </label>
           </div>
 
-          <button className="export-btn" onClick={handleExport}>
-            📥 Export to Excel
-          </button>
+       
         </div>
       )}
 
@@ -155,7 +164,7 @@ const ReportsPage = () => {
       {/* Charts */}
       <div className="charts">
         <div className="chart-box">
-          <h4>Backlinks by Category</h4>
+          <h4>Backlinks by Category (Selected Project)</h4>
           <Bar
             data={{
               labels: categories,
@@ -170,15 +179,17 @@ const ReportsPage = () => {
             options={{ responsive: true }}
           />
         </div>
+
         <div className="chart-box">
-          <h4>Status Distribution</h4>
-          <Doughnut
+          <h4>Total Backlinks per Project</h4>
+          <Bar
             data={{
-              labels: ["Created", "Pending"],
+              labels: Object.keys(projectBacklinkCount),
               datasets: [
                 {
-                  data: [created, pending],
-                  backgroundColor: ["#28a745", "#ffc107"],
+                  label: "Total Backlinks",
+                  data: Object.values(projectBacklinkCount),
+                  backgroundColor: "#00b894",
                 },
               ],
             }}

@@ -22,7 +22,7 @@ alert('Logout failed');
 return (
 <div className="navbar">
 <div className="navbar-left">
-<h3>Welcome, {user?.name || 'User'} 👋</h3>
+<h3>Welcome👋</h3>
 <p className="role-tag">{role?.toUpperCase()}</p>
 </div>
 <div className="navbar-right">
