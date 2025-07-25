@@ -45,7 +45,7 @@ const ManageUsers = () => {
   return (
     <div className="manage-users-page">
       <h2>👥 Manage Users</h2>
-      <div className="table-responsive">
+      <div className="table-wrapper">
         <table className="user-table">
           <thead>
             <tr>
