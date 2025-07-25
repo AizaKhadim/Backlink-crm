@@ -1,143 +1,160 @@
-/* src/pages/GlobalBacklinks.css */
+/* GlobalBacklinkSheet.css */
 
+/* ==== Base Layout (Desktop) ==== */
 .global-backlinks-page {
-  padding: 40px;
-  background: linear-gradient(to bottom right, #f7f9fd, #edf2fb);
-  min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
-  color: #2a2a2a;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.global-backlinks-page h2 {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 25px;
-  color: #4b4b4b;
-  text-shadow: 1px 1px 2px #d4d4d4;
-}
-
-/* Tabs */
 .tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .tab {
-  background: rgba(255, 255, 255, 0.85);
-  border: none;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
   padding: 10px 18px;
-  border-radius: 20px;
-  font-weight: 500;
-  font-size: 14px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.tab:hover {
-  background: #e2e8f0;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
 }
 
 .tab.active {
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  color: #fff;
-  font-weight: 600;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
 }
 
-/* Filter Bar */
 .filter-bar {
   display: flex;
-  gap: 14px;
-  margin-bottom: 25px;
+  gap: 20px;
+  align-items: center;
   flex-wrap: wrap;
 }
 
-.search-input,
-.date-filter {
-  padding: 12px 16px;
+.search-input {
+  padding: 8px 12px;
   font-size: 14px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 12px;
-  min-width: 240px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
-  transition: border-color 0.2s ease;
+  min-width: 250px;
 }
 
-.search-input:focus,
-.date-filter:focus {
-  border-color: #667eea;
-  outline: none;
+.date-filter {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 180px;
 }
 
-/* Table Styling */
 .backlink-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+.backlink-table table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .backlink-table th,
 .backlink-table td {
-  padding: 14px 18px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
   text-align: left;
   font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
 }
 
 .backlink-table th {
-  background: #f5f7fa;
+  background-color: #f9f9f9;
   font-weight: 600;
-  color: #333;
-  text-transform: uppercase;
-  font-size: 13px;
-  letter-spacing: 0.5px;
 }
 
-.backlink-table tr:hover {
-  background-color: #f8fbff;
-  transition: background-color 0.3s ease;
-}
-
-/* Status Badge Styles */
 .status {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 13px;
-  font-weight: 600;
-  text-transform: capitalize;
+  font-weight: 500;
+  text-align: center;
 }
 
-.status.Live {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status.Pending {
+.status.pending {
   background-color: #fff3cd;
   color: #856404;
 }
 
-.status.Failed {
+.status.completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.failed {
   background-color: #f8d7da;
   color: #721c24;
 }
 
-/* Link */
-a {
-  color: #4a90e2;
-  text-decoration: none;
-  font-weight: 500;
-}
+/* ==== Mobile Responsive Styling ==== */
+@media (max-width: 768px) {
+  .global-backlinks-page {
+    padding: 20px 15px;
+  }
 
-a:hover {
-  text-decoration: underline;
+  .tabs {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tab {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .search-input,
+  .date-filter {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .backlink-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+  }
+
+  .backlink-table table {
+    width: 100%;
+    min-width: 700px; /* Keep table wide so it scrolls horizontally */
+  }
+
+  .backlink-table th,
+  .backlink-table td {
+    white-space: nowrap;
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+
+  .backlink-table th {
+    font-size: 12px;
+  }
+
+  .status {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
 }

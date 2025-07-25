@@ -174,3 +174,55 @@
 .close-modal-btn:hover {
   color: #555;
 }
+.import-export-bar {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.export-btn,
+.import-btn {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.export-btn:hover,
+.import-btn:hover {
+  background: linear-gradient(90deg, #0056b3, #003d80);
+}
+
+.import-label {
+  position: relative;
+}
+
+.import-label input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+/* Make table responsive with horizontal scroll */
+.category-block table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Make form scrollable inside modal */
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+

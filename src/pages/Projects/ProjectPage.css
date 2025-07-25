@@ -1,9 +1,12 @@
 .project-page {
-  padding: 40px;
+  padding: 40px 20px;
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(to bottom right, #eaf0fb, #f7faff);
   min-height: 100vh;
   color: #2c2c2c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .project-page h2 {
@@ -11,15 +14,18 @@
   font-weight: 700;
   margin-bottom: 24px;
   color: #444;
+  text-align: center;
 }
 
 .project-form {
+  width: 100%;
   max-width: 600px;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   padding: 28px;
   border-radius: 16px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
 }
 
 .project-form input,
@@ -32,6 +38,7 @@
   border-radius: 10px;
   font-family: 'Poppins', sans-serif;
   background-color: #fff;
+  box-sizing: border-box;
 }
 
 .project-form textarea {
@@ -49,6 +56,7 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .project-form button:hover {
@@ -56,14 +64,44 @@
   transform: translateY(-1px);
 }
 
-.success-text {
-  color: green;
+.success-text,
+.error-text {
   margin-top: 12px;
   font-weight: 500;
+  text-align: center;
+}
+
+.success-text {
+  color: green;
 }
 
 .error-text {
   color: red;
-  margin-top: 12px;
-  font-weight: 500;
+}
+
+/* ✅ Responsive Media Query */
+@media (max-width: 480px) {
+  .project-page {
+    padding: 24px 12px;
+  }
+
+  .project-page h2 {
+    font-size: 24px;
+  }
+
+  .project-form {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .project-form input,
+  .project-form textarea {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .project-form button {
+    font-size: 13px;
+    padding: 10px;
+  }
 }

@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.project-goals-page {
+  padding: 2rem;
+  background: #f9fafe;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+}
+
+/* 🔽 Project Dropdown */
+.project-selector {
+  margin-bottom: 20px;
+  font-size: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.project-selector label {
+  font-weight: 600;
+}
+
+.project-selector select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+/* ➕ Add Goal Form */
+.goal-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.goal-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 180px;
+}
+
+.goal-form button {
+  background: #28a745;
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.goal-form button:hover {
+  background-color: #218838;
+}
+
+/* 📋 Goals Table Container */
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 20px;
+}
+
+.goals-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.goals-table th,
+.goals-table td {
+  padding: 12px 14px;
+  border: 1px solid #eee;
+  text-align: left;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.goals-table th {
+  background-color: #f3f5f8;
+  font-weight: 600;
+}
+
+/* 🎯 Status Tags */
+.status {
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.status.Pending {
+  background: #ffeeba;
+  color: #856404;
+}
+
+.status.In\ Progress {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status.Completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.Overdue {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* 📈 Progress Bar */
+.progress-bar {
+  height: 20px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 200px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #007bff;
+  color: white;
+  text-align: center;
+  font-size: 12px;
+  line-height: 20px;
+  transition: width 0.3s ease;
+  white-space: nowrap;
+}
+
+/* 🔔 Reminder Dropdown */
+.notifications-box {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.notifications-box button {
+  background: #ffc107;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.reminder-list {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 300px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  list-style: none;
+  z-index: 10;
+}
+
+.reminder-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.reminder-list span {
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+/* ✅ Responsive Layout */
+@media (max-width: 768px) {
+  .project-goals-page {
+    padding: 1rem;
+  }
+
+  .goal-form {
+    flex-direction: column;
+  }
+
+  .goal-form input,
+  .goal-form button {
+    width: 100%;
+  }
+
+  .project-selector {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .reminder-list {
+    width: 90vw;
+  }
+
+  .progress-bar {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* ✅ Make table scrollable on mobile */
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .goals-table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+  }
+
+  .goals-table th,
+  .goals-table td {
+    white-space: nowrap;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .goals-table th {
+    font-size: 13px;
+    background-color: #f3f5f8;
+  }
+}

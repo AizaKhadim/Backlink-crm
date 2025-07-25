@@ -7,6 +7,7 @@ import "./ProjectPage.css";
 const ProjectPage = () => {
   const { user } = useUser();
   const [title, setTitle] = useState("");
+  const [website, setWebsite] = useState(""); // 🔹 New field
   const [description, setDescription] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -16,8 +17,8 @@ const ProjectPage = () => {
     setError("");
     setSuccess("");
 
-    if (!title || !description) {
-      setError("Title and description are required.");
+    if (!title || !website || !description) {
+      setError("Title, website, and description are required.");
       return;
     }
 
@@ -29,11 +30,13 @@ const ProjectPage = () => {
     try {
       await addDoc(collection(db, "projects"), {
         title,
+        website, // 🔹 Save website
         description,
         createdAt: serverTimestamp(),
         createdBy: user.uid,
       });
       setTitle("");
+      setWebsite("");
       setDescription("");
       setSuccess("✅ Project created successfully!");
     } catch (err) {
@@ -52,6 +55,12 @@ const ProjectPage = () => {
           placeholder="Project Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Project Website"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
         />
         <textarea
           placeholder="Project Description"

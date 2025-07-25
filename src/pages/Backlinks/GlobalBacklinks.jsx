@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   collection,
   getDocs,
+  doc,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import "./GlobalBacklinks.css";
 
 const categories = [
@@ -71,6 +75,96 @@ const GlobalBacklinks = () => {
     return matchesSearch && matchesDate;
   }) || [];
 
+  const handleExportToExcel = () => {
+    const dataToExport = filtered.map((link) => ({
+      Project: link.projectTitle,
+      Date: link.date,
+      Website: link.website,
+      DA: link.da,
+      SpamScore: link.spamScore,
+      Username: link.username,
+      Password: link.password,
+      Link: link.link,
+      Category: link.category,
+      Notes: link.notes,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Backlinks");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, `Backlinks-${activeCategory}.xlsx`);
+  };
+
+ const handleImportExcel = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    const binaryStr = event.target.result;
+    const workbook = XLSX.read(binaryStr, { type: "binary" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+    const newBacklinksByCategory = { ...backlinks };
+
+    for (const entry of jsonData) {
+      const category = (entry.Category || "").toLowerCase();
+      const projectTitle = entry.Project?.trim();
+      const matchedProject = Object.entries(projects).find(
+        ([, data]) => data.title === projectTitle
+      );
+
+      if (!matchedProject || !categories.includes(category)) continue;
+
+      const [projectId] = matchedProject;
+
+      const docRef = await addDoc(collection(db, "projects", projectId, category), {
+        date: entry.Date || "",
+        website: entry.Website || "",
+        da: entry.DA || "",
+        spamScore: entry.SpamScore || "",
+        username: entry.Username || "",
+        password: entry.Password || "",
+        link: entry.Link || "",
+        category,
+        notes: entry.Notes || "",
+      });
+
+      const newEntry = {
+        id: docRef.id,
+        projectId,
+        projectTitle,
+        date: entry.Date || "",
+        website: entry.Website || "",
+        da: entry.DA || "",
+        spamScore: entry.SpamScore || "",
+        username: entry.Username || "",
+        password: entry.Password || "",
+        link: entry.Link || "",
+        category,
+        notes: entry.Notes || "",
+      };
+
+      // Push to correct category in state
+      if (!newBacklinksByCategory[category]) {
+        newBacklinksByCategory[category] = [];
+      }
+      newBacklinksByCategory[category].push(newEntry);
+    }
+
+    setBacklinks(newBacklinksByCategory); // ✅ this updates the table live
+    alert("Excel data imported successfully!");
+  };
+
+  reader.readAsBinaryString(file);
+};
+
+
   return (
     <div className="global-backlinks-page">
       <h2>Backlinks - All Projects</h2>
@@ -103,6 +197,18 @@ const GlobalBacklinks = () => {
           onChange={(e) => setSelectedDate(e.target.value)}
           className="date-filter"
         />
+      </div>
+
+      {/* Export/Import Buttons */}
+      <div className="import-export-bar">
+        <button onClick={handleExportToExcel} className="export-btn">
+          Export to Excel
+        </button>
+
+        <label className="import-label">
+          <div className="import-btn">Import from Excel</div>
+          <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} />
+        </label>
       </div>
 
       {loading ? (

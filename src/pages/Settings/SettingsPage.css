@@ -98,6 +98,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .settings-content li button {
@@ -120,4 +122,49 @@
   margin-bottom: 12px;
   font-size: 14px;
   color: #444;
+}
+
+/* ✅ Responsive Enhancements */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 16px;
+  }
+
+  .settings-tabs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .settings-tabs button {
+    width: 100%;
+    text-align: left;
+  }
+
+  .settings-content {
+    padding: 20px;
+  }
+
+  .settings-content input,
+  .settings-content select {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .settings-content li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .settings-content li button {
+    align-self: flex-end;
+    margin-top: 6px;
+  }
+
+  .settings-content label {
+    font-size: 13px;
+  }
+
+  .settings-content h3 {
+    font-size: 20px;
+  }
 }
