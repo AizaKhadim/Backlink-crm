@@ -29,7 +29,7 @@ const ProjectList = () => {
   if (loading) return <p>Loading projects...</p>;
 
   return (
-    <div className="project-list">
+    <div className="project-list-page">
       <h2>All Projects</h2>
 
       {/* ✅ Only show to editor or admin */}

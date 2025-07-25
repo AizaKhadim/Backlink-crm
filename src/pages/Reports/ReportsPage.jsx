@@ -160,6 +160,16 @@ const ReportsPage = () => {
           <p>Pending</p>
         </div>
       </div>
+      {/* 🔵 NEW BLOCK: Category-wise cards */}
+<div className="category-stats">
+  {categories.map((cat) => (
+    <div className="stat-card small" key={cat}>
+      <h4>{categoryCounts[cat]}</h4>
+      <p>{cat}</p>
+    </div>
+  ))}
+</div>
+
 
       {/* Charts */}
       <div className="charts">

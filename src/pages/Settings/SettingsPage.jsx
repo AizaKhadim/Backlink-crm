@@ -1,10 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './SettingsPage.css';
 import { useUser } from '../../context/UserContext';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('users');
   const { role } = useUser();
+
+  const [projects, setProjects] = useState([]);
+
+  // 🔄 Fetch all projects
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'projects'));
+        const projectData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProjects(projectData);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // 🗑 Remove project
+  const handleRemoveProject = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'projects', id));
+      setProjects(prev => prev.filter(project => project.id !== id));
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
+  };
 
   if (role !== 'admin') {
     return (
@@ -20,22 +52,13 @@ const SettingsPage = () => {
       <h2>Settings</h2>
 
       <div className="settings-tabs">
-        <button
-          onClick={() => setActiveTab('users')}
-          className={activeTab === 'users' ? 'active' : ''}
-        >
+        <button onClick={() => setActiveTab('users')} className={activeTab === 'users' ? 'active' : ''}>
           User Access
         </button>
-        <button
-          onClick={() => setActiveTab('projects')}
-          className={activeTab === 'projects' ? 'active' : ''}
-        >
+        <button onClick={() => setActiveTab('projects')} className={activeTab === 'projects' ? 'active' : ''}>
           Projects
         </button>
-        <button
-          onClick={() => setActiveTab('custom')}
-          className={activeTab === 'custom' ? 'active' : ''}
-        >
+        <button onClick={() => setActiveTab('custom')} className={activeTab === 'custom' ? 'active' : ''}>
           Visibility
         </button>
       </div>
@@ -54,10 +77,18 @@ const SettingsPage = () => {
         {activeTab === 'projects' && (
           <div>
             <h3>Projects</h3>
-            <ul>
-              <li>ShopX SEO <button>Remove</button></li>
-              <li>TechZone Backlinks <button>Remove</button></li>
-            </ul>
+            {projects.length === 0 ? (
+              <p>No projects found.</p>
+            ) : (
+              <ul>
+                {projects.map((project) => (
+                  <li key={project.id}>
+                    {project.title}{' '}
+                    <button onClick={() => handleRemoveProject(project.id)}>Remove</button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 

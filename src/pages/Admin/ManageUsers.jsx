@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './ManageUsers.css';
-import { getFirestore, collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc
+} from 'firebase/firestore';
 import { app } from '../../firebase';
 
 const db = getFirestore(app);
@@ -39,37 +45,39 @@ const ManageUsers = () => {
   return (
     <div className="manage-users-page">
       <h2>👥 Manage Users</h2>
-      <table className="user-table">
-        <thead>
-          <tr>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Current Role</th>
-            <th>Change Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.uid}>
-              <td>{user.fullName || '—'}</td>
-              <td>{user.email}</td>
-              <td>
-                <span className={`role-badge ${user.role}`}>{user.role}</span>
-              </td>
-              <td>
-                <select
-                  value={user.role}
-                  onChange={e => handleRoleChange(user.uid, e.target.value)}
-                >
-                  <option value="viewer">Viewer</option>
-                  <option value="editor">Editor</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </td>
+      <div className="table-wrapper">
+        <table className="user-table">
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Current Role</th>
+              <th>Change Role</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.uid}>
+                <td>{user.fullName || '—'}</td>
+                <td>{user.email}</td>
+                <td>
+                  <span className={`role-badge ${user.role}`}>{user.role}</span>
+                </td>
+                <td>
+                  <select
+                    value={user.role}
+                    onChange={e => handleRoleChange(user.uid, e.target.value)}
+                  >
+                    <option value="viewer">Viewer</option>
+                    <option value="editor">Editor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
