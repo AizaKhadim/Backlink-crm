@@ -1,0 +1,228 @@
+.project-details-page {
+  padding: 40px;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom right, #f1f6fc, #ffffff);
+  min-height: 100vh;
+  color: #222;
+}
+
+.project-details-page h2 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.project-details-page p {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #555;
+}
+
+.category-block {
+  margin-bottom: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.category-block h4 {
+  font-size: 20px;
+  margin-bottom: 0.5rem;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 6px;
+}
+
+.category-block table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.category-block th,
+.category-block td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.category-block th {
+  background-color: #f0f2f5;
+  font-weight: 600;
+}
+
+.category-block a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.category-block a:hover {
+  text-decoration: underline;
+}
+
+.backlink-form {
+  margin-top: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 700px;
+}
+
+.backlink-form input,
+.backlink-form select,
+.backlink-form textarea {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  background-color: #fff;
+}
+
+.backlink-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.backlink-form button {
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  width: fit-content;
+}
+
+.backlink-form button:hover {
+  background: linear-gradient(to right, #36b996, #124e89);
+}
+
+.success-text {
+  color: green;
+  margin-top: 10px;
+  font-weight: 500;
+}
+.open-modal-btn {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.open-modal-btn:hover {
+  background: linear-gradient(to right, #556ee6, #6a45a0);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 30, 30, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  width: 90%;
+  max-width: 650px;
+  animation: scaleIn 0.25s ease-in-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+}
+
+.close-modal-btn:hover {
+  color: #555;
+}
+.import-export-bar {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.export-btn,
+.import-btn {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.export-btn:hover,
+.import-btn:hover {
+  background: linear-gradient(90deg, #0056b3, #003d80);
+}
+
+.import-label {
+  position: relative;
+}
+
+.import-label input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+/* Make table responsive with horizontal scroll */
+.category-block table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Make form scrollable inside modal */
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
