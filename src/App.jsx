@@ -54,7 +54,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<HomeScreen />} />
+      <Route path="/" element={<Homescreen />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/projects/create" element={<ProjectPage />} />
