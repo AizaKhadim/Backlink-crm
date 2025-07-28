@@ -26,7 +26,6 @@ import ManageUsers from './pages/Admin/ManageUsers';
 import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
-
 import './App.css';
 
 // Layout wrapper for routes with/without navbar & sidebar
