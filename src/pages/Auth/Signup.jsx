@@ -27,7 +27,7 @@ const user = userCredential.user;
     createdAt: serverTimestamp()
   });
 
-  navigate('/dashboard'); // or your intended route
+  navigate('/signin'); // or your intended route
 } catch (err) {
   alert(err.message);
 }
