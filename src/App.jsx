@@ -17,16 +17,17 @@ import ProjectDetails from './pages/Projects/ProjectDetails';
 import TeamPage from './pages/Team/TeamPage';
 import ReportsPage from './pages/Reports/ReportsPage';
 import SettingsPage from './pages/Settings/SettingsPage';
-import GoalsPage from './pages/Goals/GoalsPage';
+
 import InboxPage from './pages/Inbox/InboxPage';
 import SignUp from './pages/Auth/Signup';
 import SignIn from './pages/Auth/Signin';
-import HomeScreen from './pages/Homescreen/HomeScreen';
+import HomeScreen from './pages/HomeScreen/HomeScreen';
 import ManageUsers from './pages/Admin/ManageUsers';
 import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
+import GlobalGoals from './pages/Goals/GlobalGoals';
 
 // Layout wrapper for routes with/without navbar & sidebar
 function LayoutWrapper({ children }) {
@@ -68,7 +69,7 @@ function AppRoutes() {
       <Route path="/team" element={<TeamPage />} />
       <Route path="/reports" element={<ReportsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/goals" element={<GoalsPage />} />
+      <Route path="/goals" element={<GlobalGoals />} />
       <Route path="/inbox" element={<InboxPage />} />
       
 
