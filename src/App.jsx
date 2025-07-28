@@ -21,7 +21,7 @@ import GoalsPage from './pages/Goals/GoalsPage';
 import InboxPage from './pages/Inbox/InboxPage';
 import SignUp from './pages/Auth/Signup';
 import SignIn from './pages/Auth/Signin';
-import HomeScreen from './pages/Homescreen/Homescreen';
+import HomeScreen from './pages/Homescreen/HomeScreen';
 import ManageUsers from './pages/Admin/ManageUsers';
 import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
 

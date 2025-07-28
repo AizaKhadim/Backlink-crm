@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './HomeScreen.css';
+import './Homescreen.css';
 import AuthModal from './AuthModal';
 import bg from '../../assets/background.png';
 
