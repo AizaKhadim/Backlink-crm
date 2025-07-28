@@ -29,7 +29,6 @@ const Navbar = () => {
       </div>
 
       <div className={`navbar-right ${menuOpen ? 'open' : ''}`}>
-        <input type="text" className="search-input" placeholder="Search..." />
         <button className="logout-btn" onClick={handleLogout}>Logout</button>
       </div>
 
