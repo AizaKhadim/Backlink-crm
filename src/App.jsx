@@ -21,7 +21,7 @@ import SettingsPage from './pages/Settings/SettingsPage';
 import InboxPage from './pages/Inbox/InboxPage';
 import SignUp from './pages/Auth/Signup';
 import SignIn from './pages/Auth/Signin';
-import HomeScreen from './pages/HomeScreen/HomeScreen';
+import HomeScreen from './pages/Homescreen/Homescreen';
 import ManageUsers from './pages/Admin/ManageUsers';
 import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
 
