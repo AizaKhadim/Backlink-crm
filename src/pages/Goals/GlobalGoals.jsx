@@ -33,16 +33,19 @@ const GlobalGoals = () => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      const snapshot = await getDocs(collection(db, "projects"));
-      const projectList = snapshot.docs.map((doc) => ({
+  const fetchProjects = async () => {
+    const snapshot = await getDocs(collection(db, "projects"));
+    const projectList = snapshot.docs
+      .map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      }));
-      setProjects(projectList);
-    };
-    fetchProjects();
-  }, []);
+      }))
+      .filter((p) => p.isDeleted !== true); // ✅ Filter out deleted
+    setProjects(projectList);
+  };
+  fetchProjects();
+}, []);
+
 
   const handleProjectChange = (e) => {
     const projectId = e.target.value;

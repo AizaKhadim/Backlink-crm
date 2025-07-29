@@ -1,4 +1,3 @@
-// src/pages/Dashboard/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -43,6 +42,7 @@ const Dashboard = () => {
   const [projectCount, setProjectCount] = useState(0);
   const [backlinkCount, setBacklinkCount] = useState(0);
   const [goals, setGoals] = useState([]);
+  const [completedGoals, setCompletedGoals] = useState(0);
   const [categoryData, setCategoryData] = useState({});
 
   useEffect(() => {
@@ -52,35 +52,48 @@ const Dashboard = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      setProjectCount(projects.length);
+
+      const activeProjects = projects.filter((p) => !p.isDeleted);
+      setProjectCount(activeProjects.length);
 
       let totalBacklinks = 0;
       const categoryCounts = {};
-      for (const cat of categories) {
-        let count = 0;
-        for (const proj of projects) {
-          const snap = await getDocs(collection(db, "projects", proj.id, cat));
-          count += snap.size;
-        }
-        categoryCounts[cat] = count;
-        totalBacklinks += count;
-      }
-      setCategoryData(categoryCounts);
-      setBacklinkCount(totalBacklinks);
-
       let allGoals = [];
-      for (const proj of projects) {
+      let completed = 0;
+
+      for (const proj of activeProjects) {
+        let projBacklinkCount = 0;
+
+        // Count backlinks in all categories
+        for (const cat of categories) {
+          const snap = await getDocs(collection(db, "projects", proj.id, cat));
+          const catCount = snap.size;
+          projBacklinkCount += catCount;
+          categoryCounts[cat] = (categoryCounts[cat] || 0) + catCount;
+        }
+
+        totalBacklinks += projBacklinkCount;
+
+        // Fetch and evaluate goals
         const goalSnap = await getDocs(collection(db, "projects", proj.id, "goals"));
         const projGoals = goalSnap.docs.map((doc) => doc.data());
         allGoals = [...allGoals, ...projGoals];
+
+        for (const goal of projGoals) {
+          if (Number(goal.target) <= projBacklinkCount) {
+            completed++;
+          }
+        }
       }
+
+      setBacklinkCount(totalBacklinks);
+      setCategoryData(categoryCounts);
       setGoals(allGoals);
+      setCompletedGoals(completed);
     };
 
     fetchData();
   }, []);
-
-  const completedGoals = goals.filter((g) => Number(g.target) <= backlinkCount).length;
 
   const chartData = {
     labels: categories.map((cat) => `${categoryIcons[cat]} ${cat}`),
@@ -123,27 +136,18 @@ const Dashboard = () => {
     },
     scales: {
       x: {
-        grid: {
-          color: "#eee",
-        },
+        grid: { color: "#eee" },
         ticks: {
-          font: {
-            size: 12,
-            weight: "500",
-          },
+          font: { size: 12, weight: "500" },
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
-          font: {
-            size: 14,
-          },
+          font: { size: 14 },
         },
-        grid: {
-          color: "#f0f0f0",
-        },
+        grid: { color: "#f0f0f0" },
       },
     },
     animation: {

@@ -13,6 +13,7 @@ import { useUser } from "../../context/UserContext";
 import "./GlobalBacklinks.css";
 
 const categories = [
+  "all",
   "guest posting",
   "profile creation",
   "micro blogging",
@@ -30,44 +31,59 @@ const GlobalBacklinks = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [editRowId, setEditRowId] = useState(null);
   const [editData, setEditData] = useState({});
+  const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
+
+const showToast = (message, type = "success") => {
+  setToast({ visible: true, message, type });
+  setTimeout(() => {
+    setToast({ visible: false, message: "", type: "success" });
+  }, 4000);
+};
+
 
   useEffect(() => {
-    const fetchAllBacklinks = async () => {
-      setLoading(true);
-      const backlinksByCategory = {};
+  const fetchAllBacklinks = async () => {
+    setLoading(true);
+    const backlinksByCategory = {};
 
-      const projectsSnapshot = await getDocs(collection(db, "projects"));
-      const projectData = {};
-      for (const docSnap of projectsSnapshot.docs) {
-        projectData[docSnap.id] = docSnap.data();
+    const projectsSnapshot = await getDocs(collection(db, "projects"));
+    const projectData = {};
+
+    for (const docSnap of projectsSnapshot.docs) {
+      const data = docSnap.data();
+      // ❗ Exclude deleted projects
+      if (!data.isDeleted) {
+        projectData[docSnap.id] = data;
       }
-      setProjects(projectData);
+    }
+    setProjects(projectData);
 
-      for (const category of categories) {
-        const allLinks = [];
+    for (const category of categories) {
+      const allLinks = [];
 
-        for (const projectId of Object.keys(projectData)) {
-          const subCollectionRef = collection(db, "projects", projectId, category);
-          const linksSnapshot = await getDocs(subCollectionRef);
-          const links = linksSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            projectId,
-            projectTitle: projectData[projectId]?.title || "Unknown",
-            category,
-          }));
-          allLinks.push(...links);
-        }
-
-        backlinksByCategory[category] = allLinks;
+      for (const projectId of Object.keys(projectData)) {
+        const subCollectionRef = collection(db, "projects", projectId, category);
+        const linksSnapshot = await getDocs(subCollectionRef);
+        const links = linksSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          projectId,
+          projectTitle: projectData[projectId]?.title || "Unknown",
+          category,
+        }));
+        allLinks.push(...links);
       }
 
-      setBacklinks(backlinksByCategory);
-      setLoading(false);
-    };
+      backlinksByCategory[category] = allLinks;
+    }
 
-    fetchAllBacklinks();
-  }, []);
+    setBacklinks(backlinksByCategory);
+    setLoading(false);
+  };
+
+  fetchAllBacklinks();
+}, []);
+
 
   const filtered = backlinks[activeCategory]?.filter(entry => {
     const matchesSearch =
@@ -103,70 +119,142 @@ const GlobalBacklinks = () => {
     saveAs(data, `Backlinks-${activeCategory}.xlsx`);
   };
 
-  const handleImportExcel = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const handleImportExcel = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const binaryStr = event.target.result;
-      const workbook = XLSX.read(binaryStr, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
+  const selectedProject = prompt(
+    "Please enter a default project name (used if Excel row has no project name):"
+  )?.trim();
 
-      const newBacklinksByCategory = { ...backlinks };
+  if (!selectedProject) {
+    showToast("Project selection is required.", "error");
 
-      for (const entry of jsonData) {
-        const category = (entry.Category || "").toLowerCase();
-        const projectTitle = entry.Project?.trim();
-        const matchedProject = Object.entries(projects).find(
-          ([, data]) => data.title === projectTitle
+    return;
+  }
+
+  const defaultProjectMatch = Object.entries(projects).find(
+    ([, data]) => data.title.trim().toLowerCase() === selectedProject.toLowerCase()
+  );
+
+  if (!defaultProjectMatch) {
+    showToast(`Project "${selectedProject}" not found.`, "error");
+
+    return;
+  }
+
+  const [defaultProjectId, defaultProjectData] = defaultProjectMatch;
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    const binaryStr = event.target.result;
+    const workbook = XLSX.read(binaryStr, { type: "binary" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+    let successCount = 0;
+    let skippedRows = [];
+
+    const newBacklinksByCategory = { ...backlinks };
+
+    for (const entry of jsonData) {
+      const rawCategory = (entry.Category || "").toLowerCase().trim();
+      const matchedCategory = categories.find(
+        (cat) => cat !== "all" && cat.toLowerCase() === rawCategory
+      );
+      const categoryToUse = matchedCategory || null;
+
+      const excelProjectName = entry.Project?.trim();
+      let matchedProject = null;
+
+      if (excelProjectName) {
+        matchedProject = Object.entries(projects).find(
+          ([, data]) => data.title.trim().toLowerCase() === excelProjectName.toLowerCase()
         );
-
-        if (!matchedProject || !categories.includes(category)) continue;
-
-        const [projectId] = matchedProject;
-
-        const docRef = await addDoc(collection(db, "projects", projectId, category), {
-          date: entry.Date || "",
-          website: entry.Website || "",
-          da: entry.DA || "",
-          spamScore: entry.SpamScore || "",
-          username: entry.Username || "",
-          password: entry.Password || "",
-          link: entry.Link || "",
-          category,
-          notes: entry.Notes || "",
-        });
-
-        const newEntry = {
-          id: docRef.id,
-          projectId,
-          projectTitle,
-          date: entry.Date || "",
-          website: entry.Website || "",
-          da: entry.DA || "",
-          spamScore: entry.SpamScore || "",
-          username: entry.Username || "",
-          password: entry.Password || "",
-          link: entry.Link || "",
-          category,
-          notes: entry.Notes || "",
-        };
-
-        if (!newBacklinksByCategory[category]) {
-          newBacklinksByCategory[category] = [];
-        }
-        newBacklinksByCategory[category].push(newEntry);
       }
 
-      setBacklinks(newBacklinksByCategory);
-      alert("Excel data imported successfully!");
-    };
+      const finalProjectId = matchedProject
+        ? matchedProject[0]
+        : defaultProjectId;
 
-    reader.readAsBinaryString(file);
+      const finalProjectTitle = matchedProject
+        ? matchedProject[1].title
+        : defaultProjectData.title;
+
+      if (!finalProjectId) {
+        skippedRows.push(entry);
+        continue;
+      }
+
+      const commonData = {
+        date: entry.Date || "",
+        website: entry.Website || "",
+        da: entry.DA || "",
+        spamScore: entry.SpamScore || "",
+        username: entry.Username || "",
+        password: entry.Password || "",
+        link: entry.Link || "",
+        notes: entry.Notes || "",
+        projectTitle: finalProjectTitle,
+      };
+
+      try {
+        // Add to "all"
+        const docRefAll = await addDoc(collection(db, "projects", finalProjectId, "all"), {
+          ...commonData,
+          category: rawCategory || "uncategorized",
+        });
+
+        const allEntry = {
+          ...commonData,
+          category: rawCategory || "uncategorized",
+          id: docRefAll.id,
+          projectId: finalProjectId,
+        };
+
+        if (!newBacklinksByCategory["all"]) newBacklinksByCategory["all"] = [];
+        newBacklinksByCategory["all"].push(allEntry);
+
+        // Add to specific category if matched
+        if (categoryToUse) {
+          const docRef = await addDoc(collection(db, "projects", finalProjectId, categoryToUse), {
+            ...commonData,
+            category: categoryToUse,
+          });
+
+          const newEntry = {
+            ...commonData,
+            category: categoryToUse,
+            id: docRef.id,
+            projectId: finalProjectId,
+          };
+
+          if (!newBacklinksByCategory[categoryToUse]) {
+            newBacklinksByCategory[categoryToUse] = [];
+          }
+          newBacklinksByCategory[categoryToUse].push(newEntry);
+        }
+
+        successCount++;
+      } catch (err) {
+        console.error("Error adding backlink:", err);
+        skippedRows.push(entry);
+      }
+    }
+
+    setBacklinks(newBacklinksByCategory);
+    showToast(`✅ Imported: ${successCount} • ❌ Skipped: ${skippedRows.length}`, "success");
+
+
+    if (skippedRows.length > 0) {
+      console.warn("Skipped Rows:", skippedRows);
+    }
   };
+
+  reader.readAsBinaryString(file);
+};
+
+
 
   const handleEdit = (link) => {
     setEditRowId(link.id);
@@ -233,6 +321,11 @@ const GlobalBacklinks = () => {
           <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} />
         </label>
       </div>
+       {toast.visible && (
+      <div className={`toast ${toast.type}`}>
+        {toast.message}
+      </div>
+    )}
 
       {loading ? (
         <p>Loading backlinks...</p>

@@ -20,6 +20,7 @@ const backlinkCategories = [
   "micro blogging",
   "directory submission",
   "social bookmarks",
+  "all", // ✅ add 'all'
 ];
 
 const ProjectDetails = () => {
@@ -83,13 +84,7 @@ const ProjectDetails = () => {
     setError("");
     setSuccess("");
 
-    const {
-      date,
-      website,
-      da,
-      spamScore,
-      category,
-    } = formData;
+    const { date, website, da, spamScore, category } = formData;
 
     if (!date || !website || !da || !spamScore || !category) {
       setError("Please fill all required fields.");
@@ -117,7 +112,6 @@ const ProjectDetails = () => {
       setSuccess("✅ Backlink added!");
       setShowModal(false);
       fetchProjectAndBacklinks();
-
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error adding backlink:", err);
@@ -128,7 +122,7 @@ const ProjectDetails = () => {
   const handleExportToExcel = () => {
     const allLinks = [];
     for (const [category, links] of Object.entries(backlinksByCategory)) {
-      links.forEach(link => {
+      links.forEach((link) => {
         allLinks.push({
           Date: link.date,
           Website: link.website,
@@ -165,10 +159,10 @@ const ProjectDetails = () => {
       const jsonData = XLSX.utils.sheet_to_json(sheet);
 
       for (const entry of jsonData) {
-        const category = (entry.Category || "").toLowerCase();
-        if (!backlinkCategories.includes(category)) continue;
+        const rawCategory = (entry.Category || "").toLowerCase();
+        const finalCategory = backlinkCategories.includes(rawCategory) ? rawCategory : "all";
 
-        await addDoc(collection(db, "projects", id, category), {
+        await addDoc(collection(db, "projects", id, finalCategory), {
           date: entry.Date || "",
           website: entry.Website || "",
           da: entry.DA || "",
@@ -177,7 +171,7 @@ const ProjectDetails = () => {
           password: entry.Password || "",
           link: entry.Link || "",
           notes: entry.Notes || "",
-          category,
+          category: finalCategory,
           createdAt: serverTimestamp(),
         });
       }
@@ -281,9 +275,11 @@ const ProjectDetails = () => {
                   <input name="link" value={formData.link} onChange={handleInputChange} placeholder="Backlink URL (Optional)" />
                   <select name="category" value={formData.category} onChange={handleInputChange} required>
                     <option value="">Select Category</option>
-                    {backlinkCategories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
+                    {backlinkCategories
+                      .filter((cat) => cat !== "all") // ✅ exclude 'all' from form
+                      .map((cat) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
                   </select>
                   <textarea name="notes" value={formData.notes} onChange={handleInputChange} placeholder="Notes (Optional)" />
                   <button onClick={handleAddBacklink}>Add Backlink</button>

@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Link } from "react-router-dom";
-import { useUser } from "../../context/UserContext"; // 👈 Import role context
+import { useUser } from "../../context/UserContext";
 import "./ProjectsList.css";
 
 const ProjectList = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { role } = useUser(); // 👈 Get current user role
+  const { role } = useUser();
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const snapshot = await getDocs(collection(db, "projects"));
+        const q = query(collection(db, "projects"), where("isDeleted", "==", false));
+        const snapshot = await getDocs(q);
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setProjects(data);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching projects:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -32,7 +33,6 @@ const ProjectList = () => {
     <div className="project-list-page">
       <h2>All Projects</h2>
 
-      {/* ✅ Only show to editor or admin */}
       {(role === "admin" || role === "editor") && (
         <Link to="/projects/create" className="create-project-link">
           ➕ Create New Project

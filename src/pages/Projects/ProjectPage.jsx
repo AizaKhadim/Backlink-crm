@@ -7,18 +7,19 @@ import "./ProjectPage.css";
 const ProjectPage = () => {
   const { user } = useUser();
   const [title, setTitle] = useState("");
-  const [website, setWebsite] = useState(""); // 🔹 New field
+  const [website, setWebsite] = useState("");
   const [description, setDescription] = useState("");
+  const [keyword, setKeyword] = useState(""); // ✅ New field
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
   const handleCreateProject = async (e) => {
-    e.preventDefault(); // prevent page refresh
+    e.preventDefault();
     setError("");
     setSuccess("");
 
-    if (!title || !website || !description) {
-      setError("Title, website, and description are required.");
+    if (!title || !website) {
+      setError("Title and website are required.");
       return;
     }
 
@@ -30,14 +31,18 @@ const ProjectPage = () => {
     try {
       await addDoc(collection(db, "projects"), {
         title,
-        website, // 🔹 Save website
+        website,
         description,
+        keyword,
         createdAt: serverTimestamp(),
         createdBy: user.uid,
+        isDeleted: false, // ✅ Automatically set isDeleted to false
       });
+
       setTitle("");
       setWebsite("");
       setDescription("");
+      setKeyword("");
       setSuccess("✅ Project created successfully!");
     } catch (err) {
       console.error("Error creating project:", err);
@@ -63,10 +68,16 @@ const ProjectPage = () => {
           onChange={(e) => setWebsite(e.target.value)}
         />
         <textarea
-          placeholder="Project Description"
+          placeholder="Project Description (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         ></textarea>
+        <input
+          type="text"
+          placeholder="Keyword (optional)"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
 
         <button type="submit">Create Project</button>
       </form>

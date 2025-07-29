@@ -24,10 +24,12 @@ import SignIn from './pages/Auth/Signin';
 import HomeScreen from './pages/Homescreen/Homescreen';
 import ManageUsers from './pages/Admin/ManageUsers';
 import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
+import GlobalGoals from './pages/Goals/GlobalGoals';
+import Trash from './pages/TrashPage/TrashPage';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
-import GlobalGoals from './pages/Goals/GlobalGoals';
+
 
 // Layout wrapper for routes with/without navbar & sidebar
 function LayoutWrapper({ children }) {
@@ -71,6 +73,7 @@ function AppRoutes() {
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/goals" element={<GlobalGoals />} />
       <Route path="/inbox" element={<InboxPage />} />
+      <Route path="/trash" element={<Trash />} />
       
 
 
