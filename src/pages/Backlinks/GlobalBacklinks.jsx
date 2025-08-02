@@ -32,6 +32,7 @@ const GlobalBacklinks = () => {
   const [editRowId, setEditRowId] = useState(null);
   const [editData, setEditData] = useState({});
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
+  
 
 const showToast = (message, type = "success") => {
   setToast({ visible: true, message, type });
@@ -326,6 +327,13 @@ const handleImportExcel = async (e) => {
         {toast.message}
       </div>
     )}
+    <div className="excel-format-example">
+  <strong>📄 Excel Format Example:</strong>
+  <p>
+    Project | Date | Website | DA | SpamScore | Username | Password | Link | Category | Notes | Keyword
+  </p>
+</div>
+
 
       {loading ? (
         <p>Loading backlinks...</p>

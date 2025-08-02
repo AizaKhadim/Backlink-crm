@@ -79,6 +79,7 @@
   color: red;
 }
 
+
 /* ✅ Responsive Media Query */
 @media (max-width: 480px) {
   .project-page {

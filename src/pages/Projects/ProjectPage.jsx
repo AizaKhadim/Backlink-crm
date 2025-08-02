@@ -9,9 +9,22 @@ const ProjectPage = () => {
   const [title, setTitle] = useState("");
   const [website, setWebsite] = useState("");
   const [description, setDescription] = useState("");
-  const [keyword, setKeyword] = useState(""); // ✅ New field
+  const [keywordInput, setKeywordInput] = useState("");
+  const [keywords, setKeywords] = useState([]); // ✅ Array of keywords
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  const addKeyword = () => {
+    const trimmed = keywordInput.trim();
+    if (trimmed && !keywords.includes(trimmed)) {
+      setKeywords([...keywords, trimmed]);
+      setKeywordInput("");
+    }
+  };
+
+  const removeKeyword = (kw) => {
+    setKeywords(keywords.filter((k) => k !== kw));
+  };
 
   const handleCreateProject = async (e) => {
     e.preventDefault();
@@ -33,16 +46,17 @@ const ProjectPage = () => {
         title,
         website,
         description,
-        keyword,
+        keywords, // ✅ Save keyword array
         createdAt: serverTimestamp(),
         createdBy: user.uid,
-        isDeleted: false, // ✅ Automatically set isDeleted to false
+        isDeleted: false,
       });
 
       setTitle("");
       setWebsite("");
       setDescription("");
-      setKeyword("");
+      setKeywordInput("");
+      setKeywords([]);
       setSuccess("✅ Project created successfully!");
     } catch (err) {
       console.error("Error creating project:", err);
@@ -72,12 +86,32 @@ const ProjectPage = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         ></textarea>
-        <input
-          type="text"
-          placeholder="Keyword (optional)"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
+
+        {/* Keywords input */}
+        <div className="keyword-input-section">
+          <input
+            type="text"
+            placeholder="Enter keyword"
+            value={keywordInput}
+            onChange={(e) => setKeywordInput(e.target.value)}
+          />
+          <button type="button" onClick={addKeyword}>
+            Add Keyword
+          </button>
+          
+        </div>
+        <br></br>
+        {/* Show added keywords */}
+        <div className="keywords-list">
+          {keywords.map((kw, index) => (
+            <span key={index} className="keyword-tag">
+              {kw}
+              <button type="button" onClick={() => removeKeyword(kw)}>
+                ✕
+              </button>
+            </span>
+          ))}
+        </div>
 
         <button type="submit">Create Project</button>
       </form>

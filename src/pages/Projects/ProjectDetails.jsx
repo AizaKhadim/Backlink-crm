@@ -200,6 +200,13 @@ const ProjectDetails = () => {
           <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} />
         </label>
       </div>
+      <div className="excel-format-example">
+  <strong>📄 Excel Format Example:</strong>
+  <p>
+    Project | Date | Website | DA | SpamScore | Username | Password | Link | Category | Notes | Keyword
+  </p>
+</div>
+
 
       <h3>Backlink Categories</h3>
 

@@ -226,3 +226,13 @@
   overflow-y: auto;
 }
 
+.excel-format-example {
+  background-color: #f5f5f5;
+  padding: 10px 15px;
+  margin-top: 15px;
+  border-left: 4px solid #ffa726;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #333;
+  font-family: monospace;
+}
