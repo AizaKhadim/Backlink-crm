@@ -85,7 +85,7 @@ function AppRoutes() {
       
 
 
-      {/* Admin Only Route */}
+      {/* Admin Only Route. */}
       <Route
         path="/admin/users"
         element={
