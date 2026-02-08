@@ -40,6 +40,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  position: relative;
 }
 
 .logout-btn {
@@ -56,11 +57,51 @@
   background-color: #dc2626;
 }
 
-/* ---------- Responsive (Mobile) ---------- */
+.bell-btn {
+  background: #ffc107;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.navbar-notifications {
+  position: relative;
+}
+
+.navbar-reminder-list {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 13px;
+  list-style: none;
+  z-index: 10;
+}
+
+.navbar-reminder-list li {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.navbar-reminder-list span {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* Responsive (Mobile) */
 @media (max-width: 768px) {
   .navbar {
     flex-wrap: wrap;
-    padding-left: 60px; /* Leave space for sidebar toggle */
+    padding-left: 60px;
   }
 
   .hamburger {
@@ -84,7 +125,8 @@
     display: flex;
   }
 
-  .logout-btn {
+  .logout-btn,
+  .bell-btn {
     width: 100%;
     text-align: center;
     font-size: 16px;

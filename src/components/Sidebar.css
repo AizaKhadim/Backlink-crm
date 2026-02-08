@@ -1,28 +1,59 @@
+/* ================= SIDEBAR BASE ================= */
 .sidebar {
   z-index: 1000;
   width: 240px;
   height: 100vh;
   background: linear-gradient(160deg, #667eea, #764ba2);
   color: white;
-  padding: 30px 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   font-family: 'Poppins', sans-serif;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-   overflow-y: auto;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+/* ================= COLLAPSED STATE ================= */
+.sidebar.collapsed {
+  width: 70px;
+  padding: 20px 10px;
+}
+
+/* ================= HEADER ================= */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
 }
 
 .brand {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  margin-bottom: 40px;
   background: linear-gradient(to right, #fff, #ffd200);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  white-space: nowrap;
 }
 
+/* Hide brand text when collapsed */
+.sidebar.collapsed .brand {
+  display: none;
+}
+
+/* ================= COLLAPSE BUTTON ================= */
+.collapse-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 6px;
+}
+
+/* ================= NAV LIST ================= */
 .nav-list {
   list-style: none;
   padding: 0;
@@ -30,7 +61,7 @@
 }
 
 .nav-list li {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   border-radius: 8px;
   transition: background 0.2s ease;
 }
@@ -45,17 +76,24 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  padding: 10px 14px;
-  font-size: 15px;
   gap: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.nav-list li a:hover {
-  text-shadow: 0 0 2px white;
+/* Hide labels when collapsed */
+.sidebar.collapsed .label {
+  display: none;
 }
 
-/* Toggle button for mobile */
+/* Center icons when collapsed */
+.sidebar.collapsed .nav-list li a {
+  justify-content: center;
+}
+
+/* ================= MOBILE TOGGLE BUTTON ================= */
 .sidebar-toggle-btn {
   display: none;
   position: fixed;
@@ -69,19 +107,17 @@
   cursor: pointer;
 }
 
+/* ================= MOBILE VIEW ================= */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
-    top: 0;
     left: -100%;
-    width: 70%;
-    max-width: 250px;
+    top: 0;
+    width: 75%;
+    max-width: 260px;
     height: 100%;
-    background: linear-gradient(160deg, #667eea, #764ba2);
-    transition: left 0.3s ease;
     padding-top: 80px;
-    z-index: 1000;
-     overflow-y: auto;
+    transition: left 0.3s ease;
   }
 
   .sidebar.open {

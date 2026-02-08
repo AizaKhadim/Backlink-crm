@@ -37,25 +37,27 @@ const ReportsPage = () => {
   const { role } = useUser();
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      const snap = await getDocs(collection(db, "projects"));
-      const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setProjects(list);
+  const fetchProjects = async () => {
+    const snap = await getDocs(collection(db, "projects"));
+    const all = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const active = all.filter(p => p.isDeleted !== true); // ✅ Only active projects
+    setProjects(active);
 
-      // Fetch backlinks count for each project
-      const counts = {};
-      for (const proj of list) {
-        let total = 0;
-        for (const cat of categories) {
-          const snap = await getDocs(collection(db, "projects", proj.id, cat));
-          total += snap.size;
-        }
-        counts[proj.title] = total;
+    // ✅ Backlink counts only for active projects
+    const counts = {};
+    for (const proj of active) {
+      let total = 0;
+      for (const cat of categories) {
+        const snap = await getDocs(collection(db, "projects", proj.id, cat));
+        total += snap.size;
       }
-      setProjectBacklinkCount(counts);
-    };
-    fetchProjects();
-  }, []);
+      counts[proj.title] = total;
+    }
+    setProjectBacklinkCount(counts);
+  };
+  fetchProjects();
+}, []);
+
 
   useEffect(() => {
     if (!selectedProjectId) return;

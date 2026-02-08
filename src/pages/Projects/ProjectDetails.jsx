@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { serverTimestamp } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import {
+  collection,
+  getDocs,
   doc,
   getDoc,
-  collection,
-  addDoc,
-  getDocs,
-  serverTimestamp,
+  setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import { useUser } from "../../context/UserContext";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import "./ProjectDetails.css";
 
 const backlinkCategories = [
@@ -22,278 +20,393 @@ const backlinkCategories = [
   "social bookmarks",
 ];
 
+const statusOptions = ["error", "completed", "under_review"];
+
 const ProjectDetails = () => {
   const { id } = useParams();
-  const { role } = useUser();
   const [project, setProject] = useState(null);
-  const [backlinksByCategory, setBacklinksByCategory] = useState({});
-  const [formData, setFormData] = useState({
-    date: "",
-    website: "",
-    da: "",
-    spamScore: "",
-    username: "",
-    password: "",
-    link: "",
-    category: "",
-    notes: "",
-  });
+  const [activeCategory, setActiveCategory] = useState("");
+  const [categoryLinks, setCategoryLinks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
-    fetchProjectAndBacklinks();
+    fetchProject();
   }, [id]);
 
-  const fetchProjectAndBacklinks = async () => {
+  const fetchProject = async () => {
+    const snap = await getDoc(doc(db, "projects", id));
+    if (snap.exists()) setProject(snap.data());
+    setLoading(false);
+  };
+
+  // ================= CATEGORY CLICK =================
+  const handleCategoryClick = async (cat) => {
+    setActiveCategory(cat);
+    setLoading(true);
+
+    // trashed ids
+    const trashSnap = await getDocs(collection(db, "backlinks_trash"));
+    const trashedIds = trashSnap.docs
+      .filter(
+        (d) => d.data().projectId === id && d.data().category === cat
+      )
+      .map((d) => d.id);
+
+    // global
+    const globalSnap = await getDocs(collection(db, "backlinks_all"));
+    const globalLinks = globalSnap.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .filter(
+        (l) =>
+          Array.isArray(l.categories) &&
+          l.categories.includes(cat) &&
+          !trashedIds.includes(l.id)
+      );
+
+    // project saved
+    const projectSnap = await getDocs(
+      collection(db, "projects", id, cat)
+    );
+    const projectSaved = projectSnap.docs
+      .map((d) => ({ ...d.data(), isSaved: true }))
+      .filter((l) => !trashedIds.includes(l.globalId));
+
+    const merged = globalLinks.map((gl) => {
+      const saved = projectSaved.find((p) => p.globalId === gl.id);
+      return (
+        saved || {
+          globalId: gl.id,
+          website: gl.website || "",
+          da: gl.da || "",
+          spamScore: gl.spamScore || "",
+          status: gl.status || "under_review",
+          notes: gl.notes || "",
+          username: "",
+          password: "",
+          link: "",
+          keyword: "",
+
+          // guest posting extras
+          dr: "",
+          traffic: "",
+          email: "",
+          price: "",
+          niche: "",
+          publishedUrl: "",
+
+          isSaved: false,
+        }
+      );
+    });
+
+    setCategoryLinks(merged);
+    setLoading(false);
+  };
+
+  // ================= LOCAL CHANGE =================
+  const handleChange = (idx, field, value) => {
+    const updated = [...categoryLinks];
+    updated[idx][field] = value;
+    setCategoryLinks(updated);
+  };
+
+  // ================= UPDATE =================
+  const handleUpdate = async (link) => {
     try {
-      const docRef = doc(db, "projects", id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setProject(docSnap.data());
-      }
+      await setDoc(
+        doc(db, "projects", id, activeCategory, link.globalId),
+        link,
+        { merge: true }
+      );
 
-      const newBacklinksByCategory = {};
-      for (const cat of backlinkCategories) {
-        const snapshot = await getDocs(collection(db, "projects", id, cat));
-        newBacklinksByCategory[cat] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      }
+      await setDoc(
+        doc(db, "backlinks_all", link.globalId),
+        {
+          status: link.status,
+          notes: link.notes || "",
+        },
+        { merge: true }
+      );
 
-      setBacklinksByCategory(newBacklinksByCategory);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error loading project details:", err);
-      setLoading(false);
+      setEditingId(null);
+      alert("✅ Updated");
+    } catch {
+      alert("❌ Update failed");
     }
   };
 
-  const handleInputChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleAddBacklink = async () => {
-    setError("");
-    setSuccess("");
-
-    const {
-      date,
-      website,
-      da,
-      spamScore,
-      category,
-    } = formData;
-
-    if (!date || !website || !da || !spamScore || !category) {
-      setError("Please fill all required fields.");
-      return;
-    }
+  // ================= DELETE =================
+  const handleDelete = async (link) => {
+    if (!window.confirm("Move backlink to Trash?")) return;
 
     try {
-      await addDoc(collection(db, "projects", id, category), {
-        ...formData,
-        createdAt: serverTimestamp(),
+      await setDoc(doc(db, "backlinks_trash", link.globalId), {
+        ...link,
+        projectId: id,
+        category: activeCategory,
+        deletedAt: serverTimestamp(),
       });
 
-      setFormData({
-        date: "",
-        website: "",
-        da: "",
-        spamScore: "",
-        username: "",
-        password: "",
-        link: "",
-        category: "",
-        notes: "",
-      });
+      await deleteDoc(
+        doc(db, "projects", id, activeCategory, link.globalId)
+      );
 
-      setSuccess("✅ Backlink added!");
-      setShowModal(false);
-      fetchProjectAndBacklinks();
+      setCategoryLinks((prev) =>
+        prev.filter((l) => l.globalId !== link.globalId)
+      );
 
-      setTimeout(() => setSuccess(""), 3000);
-    } catch (err) {
-      console.error("Error adding backlink:", err);
-      setError("❌ Failed to add backlink.");
+      alert("✅ Moved to Trash");
+    } catch {
+      alert("❌ Failed to move to trash");
     }
   };
 
-  const handleExportToExcel = () => {
-    const allLinks = [];
-    for (const [category, links] of Object.entries(backlinksByCategory)) {
-      links.forEach(link => {
-        allLinks.push({
-          Date: link.date,
-          Website: link.website,
-          DA: link.da,
-          SpamScore: link.spamScore,
-          Username: link.username,
-          Password: link.password,
-          Link: link.link,
-          Notes: link.notes,
-          Category: category,
-        });
-      });
-    }
-
-    const worksheet = XLSX.utils.json_to_sheet(allLinks);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Backlinks");
-
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, `${project?.title || "Project"}-Backlinks.xlsx`);
-  };
-
-  const handleImportExcel = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const binaryStr = event.target.result;
-      const workbook = XLSX.read(binaryStr, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-      for (const entry of jsonData) {
-        const category = (entry.Category || "").toLowerCase();
-        if (!backlinkCategories.includes(category)) continue;
-
-        await addDoc(collection(db, "projects", id, category), {
-          date: entry.Date || "",
-          website: entry.Website || "",
-          da: entry.DA || "",
-          spamScore: entry.SpamScore || "",
-          username: entry.Username || "",
-          password: entry.Password || "",
-          link: entry.Link || "",
-          notes: entry.Notes || "",
-          category,
-          createdAt: serverTimestamp(),
-        });
-      }
-
-      alert("Import complete!");
-      fetchProjectAndBacklinks();
-    };
-
-    reader.readAsBinaryString(file);
-  };
-
-  if (loading) return <p>Loading project...</p>;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="project-details-page">
       <h2>{project?.title}</h2>
-      <p>{project?.description}</p>
 
-      <div className="import-export-bar">
-        <button onClick={handleExportToExcel} className="export-btn">
-          Export to Excel
-        </button>
-
-        <label className="import-label">
-          <div className="import-btn">Import from Excel</div>
-          <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} />
-        </label>
+      <div className="category-buttons">
+        {backlinkCategories.map((cat) => (
+          <button
+            key={cat}
+            className={activeCategory === cat ? "active" : ""}
+            onClick={() => handleCategoryClick(cat)}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
-      <h3>Backlink Categories</h3>
+      {activeCategory && (
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Website</th>
+                <th>DA</th>
+                <th>Spam</th>
 
-      {Object.entries(backlinksByCategory).map(([category, links]) => (
-        <div key={category} className="category-block">
-          <h4>{category}</h4>
-          {links.length === 0 ? (
-            <p>No backlinks yet in this category.</p>
-          ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Website</th>
-                  <th>DA</th>
-                  <th>Spam Score</th>
-                  <th>Username</th>
-                  <th>Password</th>
-                  <th>Link</th>
-                  <th>Notes</th>
+                {activeCategory === "guest posting" && (
+                  <>
+                    <th>DR</th>
+                    <th>Traffic</th>
+                    <th>Email</th>
+                    <th>Price</th>
+                    <th>Niche</th>
+                    <th>Published URL</th>
+                  </>
+                )}
+
+                <th>Status</th>
+                <th>Notes</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Link</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {categoryLinks.map((link, idx) => (
+                <tr key={link.globalId}>
+                  <td>{link.website}</td>
+                  <td>{link.da}</td>
+                  <td>{link.spamScore}</td>
+
+                  {activeCategory === "guest posting" && (
+                    <>
+                      <td>
+                        {editingId === link.globalId ? (
+                          <input
+                            value={link.dr}
+                            onChange={(e) =>
+                              handleChange(idx, "dr", e.target.value)
+                            }
+                          />
+                        ) : (
+                          link.dr || "-"
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === link.globalId ? (
+                          <input
+                            value={link.traffic}
+                            onChange={(e) =>
+                              handleChange(idx, "traffic", e.target.value)
+                            }
+                          />
+                        ) : (
+                          link.traffic || "-"
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === link.globalId ? (
+                          <input
+                            value={link.email}
+                            onChange={(e) =>
+                              handleChange(idx, "email", e.target.value)
+                            }
+                          />
+                        ) : (
+                          link.email || "-"
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === link.globalId ? (
+                          <input
+                            value={link.price}
+                            onChange={(e) =>
+                              handleChange(idx, "price", e.target.value)
+                            }
+                          />
+                        ) : (
+                          link.price || "-"
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === link.globalId ? (
+                          <input
+                            value={link.niche}
+                            onChange={(e) =>
+                              handleChange(idx, "niche", e.target.value)
+                            }
+                          />
+                        ) : (
+                          link.niche || "-"
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === link.globalId ? (
+                          <input
+                            value={link.publishedUrl}
+                            onChange={(e) =>
+                              handleChange(
+                                idx,
+                                "publishedUrl",
+                                e.target.value
+                              )
+                            }
+                          />
+                        ) : (
+                          link.publishedUrl || "-"
+                        )}
+                      </td>
+                    </>
+                  )}
+
+                  {/* STATUS */}
+                  <td>
+                    {editingId === link.globalId ? (
+                      <select
+                        value={link.status}
+                        onChange={(e) =>
+                          handleChange(idx, "status", e.target.value)
+                        }
+                      >
+                        {statusOptions.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      link.status
+                    )}
+                  </td>
+
+                  {/* NOTES */}
+                  <td>
+                    {editingId === link.globalId ? (
+                      <input
+                        value={link.notes}
+                        onChange={(e) =>
+                          handleChange(idx, "notes", e.target.value)
+                        }
+                      />
+                    ) : (
+                      link.notes || "-"
+                    )}
+                  </td>
+
+                  {/* USERNAME */}
+                  <td>
+                    {editingId === link.globalId ? (
+                      <input
+                        value={link.username}
+                        onChange={(e) =>
+                          handleChange(idx, "username", e.target.value)
+                        }
+                      />
+                    ) : (
+                      link.username || "-"
+                    )}
+                  </td>
+
+                  {/* PASSWORD */}
+                  <td>
+                    {editingId === link.globalId ? (
+                      <input
+                        value={link.password}
+                        onChange={(e) =>
+                          handleChange(idx, "password", e.target.value)
+                        }
+                      />
+                    ) : (
+                      link.password || "-"
+                    )}
+                  </td>
+
+                  {/* LINK */}
+                  <td>
+                    {editingId === link.globalId ? (
+                      <input
+                        value={link.link}
+                        onChange={(e) =>
+                          handleChange(idx, "link", e.target.value)
+                        }
+                      />
+                    ) : (
+                      link.link || "-"
+                    )}
+                  </td>
+
+                  {/* ACTIONS */}
+                  <td className="actions-col">
+                    {editingId === link.globalId ? (
+                      <>
+                        <button className="" onClick={() => handleUpdate(link)}>
+                          💾 Save
+                        </button>
+                        <button className="" onClick={() => setEditingId(null)}>
+                          ❌ Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button className=""
+                          onClick={() => setEditingId(link.globalId)}
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button className="delete-btn" onClick={() => handleDelete(link)}>
+                          🗑 Delete
+                        </button>
+                      </>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {links.map((link) => (
-                  <tr key={link.id}>
-                    <td>{link.date}</td>
-                    <td>{link.website}</td>
-                    <td>{link.da}</td>
-                    <td>{link.spamScore}</td>
-                    <td>{link.username}</td>
-                    <td>{link.password}</td>
-                    <td>
-                      <a href={link.link} target="_blank" rel="noreferrer">
-                        {link.link}
-                      </a>
-                    </td>
-                    <td>{link.notes}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+              ))}
+            </tbody>
+          </table>
         </div>
-      ))}
-
-      {role !== "viewer" && (
-        <>
-          <button
-            className="open-modal-btn"
-            onClick={() => {
-              const now = new Date().toLocaleDateString("en-CA", {
-                timeZone: "Asia/Karachi",
-              });
-              setFormData((prev) => ({ ...prev, date: now }));
-              setShowModal(true);
-            }}
-          >
-            ➕ Add Backlink
-          </button>
-
-          {showModal && (
-            <div className="modal-overlay">
-              <div className="modal-content">
-                <button className="close-modal-btn" onClick={() => setShowModal(false)}>×</button>
-                <h3>Add New Backlink</h3>
-                <div className="backlink-form">
-                  <input name="date" type="date" value={formData.date} onChange={handleInputChange} required />
-                  <input name="website" value={formData.website} onChange={handleInputChange} placeholder="Website" required />
-                  <input name="da" value={formData.da} onChange={handleInputChange} placeholder="DA" required />
-                  <input name="spamScore" value={formData.spamScore} onChange={handleInputChange} placeholder="Spam Score" required />
-                  <input name="username" value={formData.username} onChange={handleInputChange} placeholder="Username (Optional)" />
-                  <input name="password" value={formData.password} onChange={handleInputChange} placeholder="Password (Optional)" />
-                  <input name="link" value={formData.link} onChange={handleInputChange} placeholder="Backlink URL (Optional)" />
-                  <select name="category" value={formData.category} onChange={handleInputChange} required>
-                    <option value="">Select Category</option>
-                    {backlinkCategories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                  <textarea name="notes" value={formData.notes} onChange={handleInputChange} placeholder="Notes (Optional)" />
-                  <button onClick={handleAddBacklink}>Add Backlink</button>
-                  {success && <p className="success-text">{success}</p>}
-                  {error && <p className="error-text">{error}</p>}
-                </div>
-              </div>
-            </div>
-          )}
-        </>
       )}
     </div>
   );

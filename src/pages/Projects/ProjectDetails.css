@@ -18,13 +18,68 @@
   font-size: 15px;
   color: #555;
 }
+.table-scroll {
+  width: 100%;
+  max-height: 70vh;          /* 👈 vertical scroll trigger */
+  overflow-x: auto;          /* horizontal if needed */
+  overflow-y: auto;          /* vertical if needed */
+  border-radius: 12px;
+}
 
+table {
+  border-collapse: collapse;
+  min-width: 1400px;         /* 👈 forces horizontal scroll ONLY when needed */
+  width: 100%;
+}
+table th,
+table td {
+  white-space: nowrap;       /* 👈 column wrap band */
+}
+
+
+/* ================= CATEGORY BUTTONS ================= */
+.category-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.category-buttons button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.category-buttons button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #556ee6, #6a45a0);
+}
+
+.category-buttons button.active {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transform: scale(1.08);
+}
+
+/* ================= CATEGORY BLOCK ================= */
 .category-block {
   margin-bottom: 32px;
   background: rgba(255, 255, 255, 0.95);
   padding: 1.5rem;
   border-radius: 14px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+.category-block td input,
+.category-block td select {
+  min-width: 140px;          /* 👈 NOT width:100% */
+  width: auto;
 }
 
 .category-block h4 {
@@ -35,11 +90,13 @@
   padding-bottom: 6px;
 }
 
+/* ================= TABLE ================= */
 .category-block table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
   margin-top: 10px;
+  min-width: 800px;
 }
 
 .category-block th,
@@ -54,6 +111,36 @@
   font-weight: 600;
 }
 
+/* ================= INPUTS (EDITABLE FIELDS) ================= */
+.category-block td input,
+.category-block td select {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+.category-block td input:focus,
+.category-block td select:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 5px rgba(102, 126, 234, 0.4);
+}
+
+/* ================= NON-EDITABLE (SAVED VIEW) ================= */
+.category-block td.saved-field {
+  background-color: #f0f2f5;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* ================= LINKS ================= */
 .category-block a {
   color: #007bff;
   text-decoration: none;
@@ -63,166 +150,67 @@
   text-decoration: underline;
 }
 
-.backlink-form {
-  margin-top: 2rem;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-width: 700px;
-}
-
-.backlink-form input,
-.backlink-form select,
-.backlink-form textarea {
-  padding: 12px 14px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-family: inherit;
-  background-color: #fff;
-}
-
-.backlink-form textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.backlink-form button {
-  background: linear-gradient(to right, #43cea2, #185a9d);
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  font-weight: 600;
-  font-size: 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  width: fit-content;
-}
-
-.backlink-form button:hover {
-  background: linear-gradient(to right, #36b996, #124e89);
-}
-
-.success-text {
-  color: green;
-  margin-top: 10px;
-  font-weight: 500;
-}
-.open-modal-btn {
-  background: linear-gradient(to right, #667eea, #764ba2);
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
-}
-
-.open-modal-btn:hover {
-  background: linear-gradient(to right, #556ee6, #6a45a0);
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(30, 30, 30, 0.45);
-  backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  position: relative;
-  width: 90%;
-  max-width: 650px;
-  animation: scaleIn 0.25s ease-in-out;
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.close-modal-btn {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  color: #999;
-  cursor: pointer;
-}
-
-.close-modal-btn:hover {
-  color: #555;
-}
-.import-export-bar {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.export-btn,
-.import-btn {
-  background: linear-gradient(90deg, #007bff, #0056b3);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
-}
-
-.export-btn:hover,
-.import-btn:hover {
-  background: linear-gradient(90deg, #0056b3, #003d80);
-}
-
-.import-label {
-  position: relative;
-}
-
-.import-label input {
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-/* Make table responsive with horizontal scroll */
-.category-block table {
-  display: block;
-  overflow-x: auto;
+/* ================= ACTION COLUMN FIX ================= */
+.actions-col {
   white-space: nowrap;
 }
 
-/* Make form scrollable inside modal */
-.modal-content {
-  max-height: 90vh;
-  overflow-y: auto;
+/* 🚫 Action column should NEVER look editable */
+.actions-col input,
+.actions-col select {
+  display: none !important;
 }
 
+/* ✅ Buttons only */
+.actions-col button {
+  width: auto !important;
+  min-width: unset !important;
+  padding: 6px 12px;
+  margin-right: 6px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+/* Edit */
+.actions-col .edit-btn {
+  background: #ffc107;
+  color: #222;
+}
+
+/* Delete */
+.actions-col .delete-btn {
+  background: #dc3545;
+  color: white;
+}
+
+/* Save */
+.actions-col .save-btn {
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  color: white;
+}
+
+/* Cancel */
+.actions-col .cancel-btn {
+  background: #6c757d;
+  color: white;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .category-block table {
+    min-width: unset;
+    font-size: 13px;
+  }
+
+  .category-buttons {
+    justify-content: flex-start;
+  }
+
+  .category-block th,
+  .category-block td {
+    padding: 8px;
+  }
+}

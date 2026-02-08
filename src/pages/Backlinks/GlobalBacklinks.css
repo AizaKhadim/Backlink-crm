@@ -1,20 +1,149 @@
-/* GlobalBacklinkSheet.css */
+/* GlobalBacklinks.css */
 
-/* ==== Base Layout (Desktop) ==== */
+/* ==== Base Layout ==== */
 .global-backlinks-page {
   padding: 30px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-family: Arial, sans-serif;
 }
 
+.global-backlinks-page h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.export-btn,
+.import-btn {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.export-btn:hover,
+.import-btn:hover {
+  background: linear-gradient(90deg, #0056b3, #003d80);
+}
+
+/* ==== Add Backlink Form / Modal ==== */
+.open-modal-btn {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.open-modal-btn:hover {
+  background: linear-gradient(to right, #556ee6, #6a45a0);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 30, 30, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  position: relative;
+  width: 90%;
+  max-width: 650px;
+  max-height: 80vh;   /* scroll if content too tall */
+  overflow-y: auto;
+  animation: scaleIn 0.25s ease-in-out;
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.backlink-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.backlink-form input,
+.backlink-form select,
+.backlink-form textarea {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width: 100%;
+}
+
+.backlink-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.backlink-form button {
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.backlink-form button:hover {
+  background: linear-gradient(to right, #36b996, #124e89);
+}
+
+.success-text {
+  color: green;
+  font-weight: 500;
+}
+
+.error-text {
+  color: red;
+  font-weight: 500;
+}
+
+/* ==== Tabs ==== */
 .tabs {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.tab {
+.tabs button {
   background-color: #f5f5f5;
   border: 1px solid #ddd;
   padding: 10px 18px;
@@ -24,20 +153,14 @@
   transition: background-color 0.2s ease;
 }
 
-.tab.active {
+.tabs button.active {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
 }
 
-.filter-bar {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.search-input {
+/* ==== Search Input ==== */
+.global-backlinks-page > input {
   padding: 8px 12px;
   font-size: 14px;
   border-radius: 6px;
@@ -45,40 +168,31 @@
   min-width: 250px;
 }
 
-.date-filter {
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  min-width: 180px;
-}
-
-.backlink-table {
+/* ==== Table ==== */
+table {
   width: 100%;
+  border-collapse: collapse;
   border-radius: 8px;
   overflow: hidden;
   background-color: white;
   border: 1px solid #ddd;
 }
 
-.backlink-table table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.backlink-table th,
-.backlink-table td {
+th,
+td {
   padding: 14px 16px;
   border-bottom: 1px solid #eee;
   text-align: left;
   font-size: 14px;
+  vertical-align: middle;
 }
 
-.backlink-table th {
+th {
   background-color: #f9f9f9;
   font-weight: 600;
 }
 
+/* ==== Status Badge ==== */
 .status {
   padding: 6px 12px;
   border-radius: 20px;
@@ -102,7 +216,150 @@
   color: #721c24;
 }
 
-/* ==== Mobile Responsive Styling ==== */
+/* ==== Edit Mode ==== */
+.edit-btn,
+.save-btn {
+  padding: 6px 3px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.edit-btn {
+  background-color: #fff;
+  border: 1px solid #667eea;
+  color: #667eea;
+}
+
+.edit-btn:hover {
+  background-color: #667eea;
+  color: #fff;
+}
+
+.save-btn {
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  color: white;
+}
+
+.save-btn:hover {
+  background: linear-gradient(to right, #36b996, #124e89);
+}
+
+/* Action column buttons stacked */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;   /* 🔑 important */
+  justify-content: center;
+}
+
+
+.edit-btn,
+.save-btn {
+  min-width: 70px;     /* 🔒 fixed size */
+  max-width: 70px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+
+/* Row highlight while editing */
+tr:has(.save-btn) {
+  background-color: #f3f6ff;
+}
+
+/* Inputs inside table (edit mode only) */
+table td input,
+table td select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+table td input:focus,
+table td select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
+}
+
+/* Category Checkboxes */
+.category-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.category-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.category-checkboxes input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.category-checkboxes input[type="checkbox"]:checked + span,
+.category-checkboxes input[type="checkbox"]:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+/* ===== Scrollable Table Wrapper ===== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;          /* 🔑 horizontal scroll */
+  overflow-y: hidden;
+  border-radius: 10px;
+}
+
+/* Table should not shrink */
+.table-wrapper table {
+  min-width: 1200px;         /* 🔒 columns compress nahi honge */
+  border-collapse: collapse;
+}
+
+/* Smooth scrolling on mobile */
+.table-wrapper {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optional: scrollbar styling (nice look) */
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border-radius: 10px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* ==== Mobile Responsive ==== */
 @media (max-width: 768px) {
   .global-backlinks-page {
     padding: 20px 15px;
@@ -113,48 +370,40 @@
     gap: 8px;
   }
 
-  .tab {
+  .tabs button {
     font-size: 13px;
     padding: 8px 14px;
   }
 
-  .filter-bar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .search-input,
-  .date-filter {
+  .global-backlinks-page > input {
     width: 100%;
     min-width: unset;
   }
 
-  .backlink-table {
+  table {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    border-radius: 8px;
   }
 
-  .backlink-table table {
-    width: 100%;
-    min-width: 700px; /* Keep table wide so it scrolls horizontally */
-  }
-
-  .backlink-table th,
-  .backlink-table td {
+  table th,
+  table td {
     white-space: nowrap;
     padding: 12px 10px;
     font-size: 13px;
   }
 
-  .backlink-table th {
+  table th {
     font-size: 12px;
   }
 
   .status {
     font-size: 12px;
     padding: 4px 10px;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    gap: 6px;
   }
 }

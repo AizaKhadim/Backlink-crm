@@ -17,17 +17,19 @@ import ProjectDetails from './pages/Projects/ProjectDetails';
 import TeamPage from './pages/Team/TeamPage';
 import ReportsPage from './pages/Reports/ReportsPage';
 import SettingsPage from './pages/Settings/SettingsPage';
-import GoalsPage from './pages/Goals/GoalsPage';
+
 import InboxPage from './pages/Inbox/InboxPage';
 import SignUp from './pages/Auth/Signup';
 import SignIn from './pages/Auth/Signin';
 import HomeScreen from './pages/Homescreen/Homescreen';
 import ManageUsers from './pages/Admin/ManageUsers';
 import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
+import GlobalGoals from './pages/Goals/GlobalGoals';
+import Trash from './pages/TrashPage/TrashPage';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
-
 import './App.css';
+
 
 // Layout wrapper for routes with/without navbar & sidebar
 function LayoutWrapper({ children }) {
@@ -35,18 +37,26 @@ function LayoutWrapper({ children }) {
   const hideLayoutRoutes = ['/', '/signin', '/signup'];
   const hideLayout = hideLayoutRoutes.includes(location.pathname);
 
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+
   return hideLayout ? (
     children
   ) : (
-    <div className="app-wrapper">
+    <div className={`app-wrapper ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <Navbar />
+
       <div className="main-layout">
-        <Sidebar />
+        <Sidebar
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+
         <div className="main-content">{children}</div>
       </div>
     </div>
   );
 }
+
 
 // Define protected + public routes
 function AppRoutes() {
@@ -69,8 +79,9 @@ function AppRoutes() {
       <Route path="/team" element={<TeamPage />} />
       <Route path="/reports" element={<ReportsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/goals" element={<GoalsPage />} />
+      <Route path="/goals" element={<GlobalGoals />} />
       <Route path="/inbox" element={<InboxPage />} />
+      <Route path="/trash" element={<Trash />} />
       
 
 

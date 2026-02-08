@@ -1,3 +1,4 @@
+/* ==== PROJECT LIST PAGE BASE ==== */
 .project-list-page {
   padding: 40px 20px;
   font-family: 'Poppins', sans-serif;
@@ -34,6 +35,7 @@
   box-shadow: 0 6px 20px rgba(67, 206, 162, 0.3);
 }
 
+/* ==== PROJECT GRID & CARD ==== */
 .project-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -47,6 +49,7 @@
   padding: 20px 24px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 }
 
 .project-card:hover {
@@ -88,7 +91,67 @@
   text-align: center;
 }
 
-/* ✅ RESPONSIVE STYLES */
+/* ==== EDIT BUTTON ==== */
+.edit-project-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.edit-project-btn:hover {
+  background: linear-gradient(to right, #36b996, #124e89);
+  transform: translateY(-2px);
+}
+
+/* ==== INLINE EDIT FORM ==== */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.edit-form input,
+.edit-form textarea {
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: 'Poppins', sans-serif;
+}
+
+.edit-form textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.edit-form button {
+  width: fit-content;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(to right, #667eea, #764ba2);
+  transition: all 0.3s ease;
+}
+
+.edit-form button:hover {
+  background: linear-gradient(to right, #5b6ed1, #6a43a0);
+  transform: translateY(-1px);
+}
+
+/* ==== RESPONSIVE ==== */
 @media (max-width: 768px) {
   .project-list-page {
     padding: 24px 16px;
@@ -115,11 +178,18 @@
     font-size: 13px;
     padding: 7px 12px;
   }
+
+  .edit-project-btn {
+    top: 16px;
+    right: 16px;
+    padding: 5px 12px;
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 480px) {
   .project-grid {
-    grid-template-columns: 1fr; /* Stack cards on mobile */
+    grid-template-columns: 1fr;
     gap: 16px;
   }
 

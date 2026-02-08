@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Home,
@@ -11,18 +11,15 @@ import {
   Settings,
   ShieldCheck,
   Menu,
-  X,
+  ChevronLeft,
 } from 'lucide-react';
 
 import './Sidebar.css';
 import { useAuth } from '../context/AuthContext';
 
-const Sidebar = () => {
+const Sidebar = ({ collapsed, setCollapsed }) => {
   const { pathname } = useLocation();
   const { role } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleSidebar = () => setIsOpen(!isOpen);
 
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: <Home size={18} /> },
@@ -34,31 +31,34 @@ const Sidebar = () => {
     { to: '/inbox', label: 'Inbox', icon: <Inbox size={18} /> },
     { to: '/settings', label: 'Settings', icon: <Settings size={18} /> },
     ...(role === 'admin'
-      ? [{ to: '/admin/users', label: 'Manage Users', icon: <ShieldCheck size={18} /> }]
+      ? [
+          { to: '/admin/users', label: 'Manage Users', icon: <ShieldCheck size={18} /> },
+          { to: '/trash', label: 'Trash', icon: <Folder size={18} /> },
+        ]
       : []),
   ];
 
   return (
-    <>
-      {/* Hamburger menu (visible only on small screens) */}
-      <div className="sidebar-toggle-btn" onClick={toggleSidebar}>
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+    <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+      <div className="sidebar-header">
+        {!collapsed && <h2 className="brand">🧠 Backlink CRM</h2>}
+
+        <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}>
+          {collapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
+        </button>
       </div>
 
-      <div className={`sidebar ${isOpen ? 'open' : ''}`}>
-        <h2 className="brand">🧠 Backlink CRM</h2>
-        <ul className="nav-list">
-          {navItems.map((item) => (
-            <li key={item.to} className={pathname === item.to ? 'active' : ''}>
-              <Link to={item.to} onClick={() => setIsOpen(false)}>
-                <span className="icon">{item.icon}</span>
-                <span className="label">{item.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </>
+      <ul className="nav-list">
+        {navItems.map((item) => (
+          <li key={item.to} className={pathname === item.to ? 'active' : ''}>
+            <Link to={item.to}>
+              <span className="icon">{item.icon}</span>
+              {!collapsed && <span className="label">{item.label}</span>}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
