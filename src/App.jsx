@@ -27,7 +27,7 @@ import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
 import GlobalGoals from './pages/Goals/GlobalGoals';
 import Trash from './pages/TrashPage/TrashPage';
 
-import { AuthProvider, useAuth } from './context/Authcontext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
 
