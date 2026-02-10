@@ -15,8 +15,9 @@
   margin-bottom: 10px;
 }
 .export-btn,
+.import-guidelines-btn,
 .import-btn {
-  background: linear-gradient(90deg, #007bff, #0056b3);
+  background: linear-gradient(90deg, #3c80ca, #764ba2);
   color: #fff;
   padding: 10px 20px;
   border-radius: 12px;
@@ -27,6 +28,11 @@
   transition: background 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
 }
+.import-export-bar {
+  display: flex;
+  gap: 12px;
+  margin: 10px 0;
+}
 
 .export-btn:hover,
 .import-btn:hover {
@@ -34,6 +40,14 @@
 }
 
 /* ==== Add Backlink Form / Modal ==== */
+.small-center-btn {
+  width: fit-content;
+  padding: 8px 16px;
+  font-size: 14px;
+  margin: 0 auto 16px auto; /* 👈 center */
+  display: block;
+}
+
 .open-modal-btn {
   background: linear-gradient(to right, #667eea, #764ba2);
   color: white;
@@ -358,6 +372,63 @@ table td select:focus {
 .table-wrapper::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
+/* ===== Compact Categories Column ===== */
+.col-categories {
+  max-width: 160px;        /* 🔑 yahan space control */
+  width: 160px;
+  white-space: nowrap;    /* single line */
+  overflow: hidden;
+  text-overflow: ellipsis; /* ... show kare */
+}
+.import-help-card {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+}
+
+.import-help-card h4 {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.import-help-card h5 {
+  margin: 10px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.import-note {
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.import-note.small {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.import-table {
+  overflow-x: auto;
+  margin-bottom: 6px;
+}
+
+.import-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.import-table th {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 
 /* ==== Mobile Responsive ==== */
 @media (max-width: 768px) {

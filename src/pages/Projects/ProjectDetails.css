@@ -197,6 +197,33 @@ table td {
   background: #6c757d;
   color: white;
 }
+.category-buttons button.active {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transform: scale(1.08);
+  background: linear-gradient(to right, #ff8c42, #ff6b6b); /* 👈 different highlight */
+}
+
+/* Export button */
+.category-buttons .export-btn {
+  padding: 10px 18px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.category-buttons .export-btn:hover {
+  background-color: #45a049;
+}
+
+/* Responsive fix for table */
+.table-scroll table {
+  min-width: unset;
+  width: 100%;
+}
+
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {

@@ -70,6 +70,7 @@
   margin-bottom: 14px;
 }
 
+/* ==== Project Card Buttons ==== */
 .project-card a {
   background: linear-gradient(to right, #667eea, #764ba2);
   padding: 8px 14px;
@@ -79,11 +80,18 @@
   font-weight: 500;
   text-decoration: none;
   transition: background 0.3s ease;
+  display: inline-block;
+  margin-right: 10px; /* <-- Added space between buttons */
+}
+
+.project-card a:last-child {
+  margin-right: 0; /* <-- Last button no extra margin */
 }
 
 .project-card a:hover {
   background: linear-gradient(to right, #5b6ed1, #6a43a0);
 }
+
 
 .loading {
   font-size: 16px;

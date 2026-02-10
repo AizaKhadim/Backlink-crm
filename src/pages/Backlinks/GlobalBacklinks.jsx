@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, addDoc, query, where, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { useUser } from "../../context/UserContext";
 import * as XLSX from "xlsx";
@@ -7,11 +15,18 @@ import { saveAs } from "file-saver";
 import "./GlobalBacklinks.css";
 
 const categoriesList = [
-  "guest posting",
-  "profile creation",
-  "micro blogging",
-  "directory submission",
-  "social bookmarks",
+  "Guest Posting",
+  "Profile Creation",
+  "Micro Blogging",
+  "Directory Submission",
+  "Social Bookmarks",
+];
+
+const statusOptions = [
+  { value: "not_started", label: "Not Started" },
+  { value: "under_review", label: "Under Review" },
+  { value: "completed", label: "Completed" },
+  { value: "error", label: "Error" },
 ];
 
 const GlobalBacklinks = () => {
@@ -20,6 +35,8 @@ const GlobalBacklinks = () => {
   const [backlinks, setBacklinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showImportGuide, setShowImportGuide] = useState(false);
+
 
   // Modal
   const [showModal, setShowModal] = useState(false);
@@ -36,7 +53,7 @@ const GlobalBacklinks = () => {
     niche: "",
     publishedUrl: "",
     categories: [],
-    status: "under_review",
+    status: "not_started",
     notes: "",
   });
 
@@ -127,7 +144,7 @@ const GlobalBacklinks = () => {
         niche: "",
         publishedUrl: "",
         categories: [],
-        status: "under_review",
+        status: "not_started",
         notes: "",
       });
 
@@ -161,23 +178,21 @@ const GlobalBacklinks = () => {
     }
   };
 
-  
-// Export to Excel
-// ==========================
-const handleExport = () => {
-  if (!backlinks || backlinks.length === 0) {
-    alert("No backlinks to export!");
-    return;
-  }
+  // Export to Excel
+  const handleExport = () => {
+    if (!backlinks || backlinks.length === 0) {
+      alert("No backlinks to export!");
+      return;
+    }
 
-  // Filter by active category
-  const filtered = backlinks.filter(
-    (link) => activeCategory === "all" || (Array.isArray(link.categories) && link.categories.includes(activeCategory))
-  );
+    // Filter by active category
+    const filtered = backlinks.filter(
+      (link) =>
+        activeCategory === "all" ||
+        (Array.isArray(link.categories) && link.categories.includes(activeCategory))
+    );
 
-  // Map all backlinks to exportable data
-  const dataToExport = filtered.map((link) => {
-    return {
+    const dataToExport = filtered.map((link) => ({
       Website: link.website || "",
       DA: link.da || "",
       SpamScore: link.spamScore || "",
@@ -190,20 +205,18 @@ const handleExport = () => {
       Status: link.status || "",
       Notes: link.notes || "",
       Categories: Array.isArray(link.categories) ? link.categories.join(", ") : "",
-    };
-  });
+    }));
 
-  // Create Excel worksheet and workbook
-  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Backlinks");
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Backlinks");
 
-  // Write workbook to blob and save
-  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-  saveAs(blob, `Backlinks-${activeCategory}.xlsx`);
-};
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, `Backlinks-${activeCategory}.xlsx`);
+  };
 
+  // Import from Excel
 const handleImport = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -310,7 +323,7 @@ const handleImport = async (e) => {
   alert(`✅ Import finished — Added: ${addedCount}, Skipped: ${skippedCount}`);
 };
 
-
+  // Filtered list
   const filtered = backlinks.filter(
     (link) =>
       (activeCategory === "all" ||
@@ -320,18 +333,18 @@ const handleImport = async (e) => {
 
   return (
     <div className="global-backlinks-page">
-      <h2>Main Backlinks Database</h2>
+      <h2>Main Database (all websites)</h2>
 
       {role === "admin" && (
         <button
-          className="open-modal-btn"
+          className="open-modal-btn small-center-btn"
           onClick={() => {
             setShowModal(true);
             setSuccess("");
             setError("");
           }}
         >
-          Add Backlink
+          Add Website
         </button>
       )}
 
@@ -349,6 +362,7 @@ const handleImport = async (e) => {
                 value={formData.website}
                 onChange={(e) => setFormData({ ...formData, website: e.target.value })}
               />
+
               <div className="category-checkboxes">
                 {categoriesList.map((cat) => (
                   <label key={cat}>
@@ -362,7 +376,7 @@ const handleImport = async (e) => {
                 ))}
               </div>
 
-              {formData.categories.includes("guest posting") ? (
+              {formData.categories.includes("Guest Posting") ? (
                 <>
                   <input
                     placeholder="DA"
@@ -404,6 +418,15 @@ const handleImport = async (e) => {
                     value={formData.publishedUrl}
                     onChange={(e) => setFormData({ ...formData, publishedUrl: e.target.value })}
                   />
+                   <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    >
+                      <option value="not_started">Not Started</option>
+                      <option value="under_review">Under Review</option>
+                      <option value="completed">Completed</option>
+                      <option value="error">Error</option>
+                    </select>
                   <textarea
                     placeholder="Notes"
                     value={formData.notes}
@@ -427,6 +450,7 @@ const handleImport = async (e) => {
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     >
+                      <option value="not_started">Not Started</option>
                       <option value="under_review">Under Review</option>
                       <option value="completed">Completed</option>
                       <option value="error">Error</option>
@@ -474,273 +498,248 @@ const handleImport = async (e) => {
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      {/* Export */}
+      {/* Export / Import */}
       {role === "admin" && (
-  <div className="import-export-bar">
-    <button className="export-btn" onClick={handleExport}>Export</button>
-    <label className="import-btn">
-      Import
-      <input
-        type="file"
-        accept=".xlsx, .xls"
-        style={{ display: "none" }}
-        onChange={handleImport}
-      />
-    </label>
+        <div className="import-export-bar">
+          <button className="export-btn" onClick={handleExport}>
+            Export
+          </button>
+          <label className="import-btn">
+            Import
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              style={{ display: "none" }}
+              onChange={handleImport}
+            />
+          </label>
+          <button
+          className="import-guidelines-btn"
+          onClick={() => setShowImportGuide(!showImportGuide)}
+        >
+          {showImportGuide ? "Hide Import Guidelines" : "View Import Guidelines"}
+        </button>
+
+        </div>
+      )}
+        {showImportGuide && (
+  <div className="import-help-card">
+    <h4>📥 Import Format Guide</h4>
+
+    <p className="import-note">
+      Your Excel file <strong>must</strong> contain the following headers.
+      Header names are <strong>case-sensitive</strong>.
+    </p>
+
+    <h5>Required Columns (Must be present)</h5>
+    <div className="import-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Website</th>
+            <th>DA</th>
+            <th>SpamScore</th>
+            <th>Notes</th>
+            <th>Status</th>
+            <th>Categories</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <h5>Guest Posting (Optional but Recommended)</h5>
+    <div className="import-table">
+      <table>
+        <thead>
+          <tr>
+            <th>DR</th>
+            <th>Traffic</th>
+            <th>Email</th>
+            <th>Price</th>
+            <th>Niche</th>
+            <th>PublishedURL</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <p className="import-note small">
+      Categories can be comma separated.<br />
+      Example: <code>Guest Posting, Profile Creation</code>
+    </p>
   </div>
 )}
 
 
       {/* Table */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : filtered.length === 0 ? (
-        <p>No backlinks found</p>
-      ) : (
-        <div className="table-wrapper">
-           <table>
-          <thead>
-            <tr>
-              {activeCategory === "guest posting" ? (
-                <>
-                  <th>Website</th>
-                  <th>DA</th>
-                  <th>Spam</th>
-                  <th>DR</th>
-                  <th>Traffic</th>
-                  <th>Email</th>
-                  <th>Price</th>
-                  <th>Niche</th>
-                  <th>Published URL</th>
-                  <th>Notes</th>
-                  <th>Action</th>
-                </>
+     {loading ? (
+  <p>Loading...</p>
+) : filtered.length === 0 ? (
+  <p>No backlinks found</p>
+) : (
+  <div className="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th className="col-categories">Website</th>
+
+          {activeCategory === "all" && (
+            <th className="col-categories">Categories</th>
+          )}
+
+          <th>DA</th>
+          <th>Spam</th>
+
+          {/* 👇 Guest Posting extra headers */}
+          {activeCategory === "Guest Posting" && (
+            <>
+              <th>DR</th>
+              <th>Traffic</th>
+              <th>Email</th>
+              <th>Price</th>
+              <th>Niche</th>
+              <th>Published URL</th>
+            </>
+          )}
+
+          <th>Status</th>
+          <th>Notes</th>
+
+          {role === "admin" && <th>Action</th>}
+        </tr>
+      </thead>
+
+      <tbody>
+        {filtered.map((link) => (
+          <tr key={link.id}>
+            {/* Website */}
+            <td>
+              {editableRowId === link.id ? (
+                <input className="col-categories"
+                  value={editableRowData.website || ""}
+                  onChange={(e) =>
+                    setEditableRowData({
+                      ...editableRowData,
+                      website: e.target.value,
+                    })
+                  }
+                />
               ) : (
-                <>
-                  <th>Website</th>
-                  <th>DA</th>
-                  <th>Spam</th>
-                  <th>Status</th>
-                  <th>Notes</th>
-                  <th>Action</th>
-                </>
+                link.website
               )}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((link) => (
-              <tr key={link.id}>
-                {activeCategory === "guest posting" ? (
-                  <>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.website || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, website: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.website
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.da || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, da: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.da
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.spamScore || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, spamScore: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.spamScore
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.dr || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, dr: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.dr
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.traffic || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, traffic: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.traffic
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.email || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, email: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.email
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.price || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, price: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.price
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.niche || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, niche: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.niche
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.publishedUrl || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, publishedUrl: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.publishedUrl
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.notes || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, notes: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.notes
-                      )}
-                    </td>
-                    <td>
-                      {role === "admin" && (
-                        <button className="edit-btn" onClick={() => toggleEdit(link)}>
-                          {editableRowId === link.id ? "Save" : "Edit"}
-                        </button>
-                      )}
-                    </td>
-                  </>
-                ) : (
-                  <>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.website || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, website: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.website
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.da || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, da: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.da
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.spamScore || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, spamScore: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.spamScore
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <select
-                          value={editableRowData.status || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, status: e.target.value })
-                          }
-                        >
-                          <option value="under_review">Under Review</option>
-                          <option value="completed">Completed</option>
-                          <option value="error">Error</option>
-                        </select>
-                      ) : (
-                        link.status
-                      )}
-                    </td>
-                    <td>
-                      {editableRowId === link.id ? (
-                        <input
-                          value={editableRowData.notes || ""}
-                          onChange={(e) =>
-                            setEditableRowData({ ...editableRowData, notes: e.target.value })
-                          }
-                        />
-                      ) : (
-                        link.notes
-                      )}
-                    </td>
-                    <td>
-                      {role === "admin" && (
-                        <button className="edit-btn" onClick={() => toggleEdit(link)}>
-                          {editableRowId === link.id ? "Save" : "Edit"}
-                        </button>
-                      )}
-                    </td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
-       
+            </td>
+
+            {/* Categories (ALL tab only) */}
+            {activeCategory === "all" && (
+              <td className="col-categories">
+                {link.categories?.join(", ") || ""}
+              </td>
+            )}
+
+            {/* DA */}
+            <td>
+              {editableRowId === link.id ? (
+                <input
+                  value={editableRowData.da || ""}
+                  onChange={(e) =>
+                    setEditableRowData({
+                      ...editableRowData,
+                      da: e.target.value,
+                    })
+                  }
+                />
+              ) : (
+                link.da
+              )}
+            </td>
+
+            {/* Spam */}
+            <td>
+              {editableRowId === link.id ? (
+                <input
+                  value={editableRowData.spamScore || ""}
+                  onChange={(e) =>
+                    setEditableRowData({
+                      ...editableRowData,
+                      spamScore: e.target.value,
+                    })
+                  }
+                />
+              ) : (
+                link.spamScore
+              )}
+            </td>
+
+            {/* 👇 Guest Posting extra columns */}
+            {activeCategory === "Guest Posting" && (
+              <>
+                <td>{link.dr || "-"}</td>
+                <td>{link.traffic || "-"}</td>
+                <td>{link.email || "-"}</td>
+                <td>{link.price || "-"}</td>
+                <td>{link.niche || "-"}</td>
+                <td>{link.publishedUrl || "-"}</td>
+              </>
+            )}
+
+            {/* Status */}
+            <td>
+              {editableRowId === link.id ? (
+                <select
+                  value={editableRowData.status || ""}
+                  onChange={(e) =>
+                    setEditableRowData({
+                      ...editableRowData,
+                      status: e.target.value,
+                    })
+                  }
+                >
+                  {statusOptions.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                link.status
+              )}
+            </td>
+
+            {/* Notes */}
+            <td>
+              {editableRowId === link.id ? (
+                <input
+                  value={editableRowData.notes || ""}
+                  onChange={(e) =>
+                    setEditableRowData({
+                      ...editableRowData,
+                      notes: e.target.value,
+                    })
+                  }
+                />
+              ) : (
+                link.notes
+              )}
+            </td>
+
+            {/* Action */}
+            {role === "admin" && (
+              <td>
+                <button
+                  className="edit-btn"
+                  onClick={() => toggleEdit(link)}
+                >
+                  {editableRowId === link.id ? "Save" : "Edit"}
+                </button>
+              </td>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+
       )}
     </div>
   );

@@ -1,0 +1,202 @@
+/* ===============================
+   Project Info Page - Updated for JSX
+=================================*/
+
+.project-info-wrapper {
+  max-width: 1050px;
+  margin: 50px auto;
+  padding: 35px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  transition: 0.3s ease;
+}
+
+/* Header */
+.project-info-heading {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #1a1a1a;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.project-info-heading::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 3px;
+  background: #2969ff;
+  border-radius: 2px;
+}
+
+/* ===============================
+   View Mode
+=================================*/
+
+.project-view-container {
+  margin-top: 20px;
+}
+
+.project-title-display {
+  font-size: 22px;
+  color: #2969ff;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.project-view-container p {
+  margin: 10px 0;
+  font-size: 15px;
+  color: #555;
+  line-height: 1.7;
+  padding: 8px 12px;
+  background: #f9fbff;
+  border-radius: 8px;
+}
+
+.project-view-container p strong {
+  color: #222;
+  font-weight: 600;
+}
+
+/* ===============================
+   Form Styling
+=================================*/
+
+.project-edit-form-container input,
+.project-edit-form-container textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #e3e6f0;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #fdfdfd;
+  transition: 0.2s ease;
+}
+
+.project-edit-form-container input:focus,
+.project-edit-form-container textarea:focus {
+  border-color: #2969ff;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(41, 105, 255, 0.1);
+  outline: none;
+}
+
+.project-edit-form-container textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Labels */
+.project-form-label {
+  display: block;
+  margin-bottom: 6px;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Section Headings */
+.project-form-section-title {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2969ff;
+}
+
+/* Buttons */
+.project-form-button-group {
+  margin-top: 20px;
+}
+
+.project-save-btn {
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s ease;
+  font-weight: 500;
+  background: #2969ff;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.project-save-btn:hover {
+  background: #1e50d8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(41, 105, 255, 0.25);
+}
+
+.project-cancel-btn {
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s ease;
+  font-weight: 500;
+  background: #f1f3f9;
+  color: #444;
+}
+
+.project-cancel-btn:hover {
+  background: #e3e6f0;
+}
+
+.project-edit-btn {
+  margin-top: 20px;
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, #2969ff, #4a86ff);
+  transition: 0.25s ease;
+}
+
+.project-edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(41, 105, 255, 0.3);
+}
+
+/* ===============================
+   Responsive
+=================================*/
+
+@media (max-width: 768px) {
+  .project-info-wrapper {
+    padding: 25px;
+  }
+
+  .project-info-heading {
+    font-size: 22px;
+  }
+
+  .project-title-display {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-info-wrapper {
+    margin: 20px 12px;
+    padding: 18px;
+  }
+
+  .project-edit-btn,
+  .project-save-btn,
+  .project-cancel-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

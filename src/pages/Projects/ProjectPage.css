@@ -1,111 +1,103 @@
-.project-details-page {
-  padding: 30px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f4f8;
+/* ==== Page Layout ==== */
+.project-page {
+  padding: 40px 20px;
+  background: #f4f7fb;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.project-details-page h2 {
+/* ==== Heading ==== */
+.project-page h2 {
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 8px;
-  color: #1e2022;
-}
-
-.project-details-page p {
-  font-size: 16px;
-  margin-bottom: 20px;
-  color: #555;
-}
-
-/* Category Buttons */
-.category-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
   margin-bottom: 25px;
+  color: #1e2022;
+  text-align: center;
 }
 
-.category-buttons button {
-  padding: 10px 22px;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
+/* ==== Form Container ==== */
+.project-form {
+  width: 100%;
+  max-width: 950px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+}
+
+/* ==== Inputs & Textarea ==== */
+.project-form input,
+.project-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #dcdfe6;
   font-size: 14px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  color: white;
-  /* Same gradient as Guest Posting */
-  background: linear-gradient(to right, #43cea2, #185a9d);
+  transition: all 0.2s ease;
+  outline: none;
+  background: #fafbfc;
 }
 
-.category-buttons button:hover {
-  transform: scale(1.05);
+.project-form input:focus,
+.project-form textarea:focus {
+  border-color: #2969ff;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(41, 105, 255, 0.1);
+}
+
+/* Make textarea full width */
+.project-form textarea {
+  grid-column: 1 / -1;
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ==== Button ==== */
+.project-form button {
+  grid-column: 1 / -1;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #43cea2, #185a9d);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.project-form button:hover {
+  transform: translateY(-2px);
   opacity: 0.9;
 }
 
-.category-buttons button.active {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  transform: scale(1.1);
+/* ==== Messages ==== */
+.error-text {
+  margin-top: 15px;
+  color: #e53935;
+  font-weight: 500;
 }
 
-/* Table Styling */
-.category-table {
-  background-color: white;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  overflow-x: auto;
+.success-text {
+  margin-top: 15px;
+  color: #2e7d32;
+  font-weight: 500;
 }
 
-.category-table table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 700px;
-}
-
-.category-table th, .category-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-}
-
-.category-table th {
-  background-color: #e8f0fe;
-  font-weight: 600;
-  color: #1e2022;
-}
-
-.category-table tr:nth-child(even) {
-  background-color: #f9fbfd;
-}
-
-.category-table tr:hover {
-  background-color: #e3f2fd;
-}
-
-.category-table a {
-  color: #1976d2;
-  text-decoration: none;
-}
-
-.category-table a:hover {
-  text-decoration: underline;
-}
-
-/* Responsive */
+/* ==== Responsive ==== */
 @media (max-width: 768px) {
-  .category-buttons {
-    justify-content: flex-start;
+  .project-form {
+    padding: 20px;
+    grid-template-columns: 1fr;
   }
 
-  .category-table table {
-    min-width: unset;
-  }
-
-  .category-table th, .category-table td {
-    padding: 8px 10px;
-    font-size: 13px;
+  .project-page h2 {
+    font-size: 22px;
   }
 }

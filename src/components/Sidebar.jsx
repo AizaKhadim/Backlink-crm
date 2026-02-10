@@ -24,7 +24,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: <Home size={18} /> },
     { to: '/projects', label: 'Projects', icon: <Folder size={18} /> },
-    { to: '/backlinks', label: 'Backlinks', icon: <Link2 size={18} /> },
+    { to: '/backlinks', label: 'Main DataBase', icon: <Link2 size={18} /> },
     { to: '/reports', label: 'Reports', icon: <BarChart2 size={18} /> },
     { to: '/team', label: 'Team', icon: <Users size={18} /> },
     { to: '/goals', label: 'Goals', icon: <Flag size={18} /> },

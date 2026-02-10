@@ -26,6 +26,7 @@ import ManageUsers from './pages/Admin/ManageUsers';
 import GlobalBacklinks from './pages/Backlinks/GlobalBacklinks';
 import GlobalGoals from './pages/Goals/GlobalGoals';
 import Trash from './pages/TrashPage/TrashPage';
+import ProjectInfo from './pages/Projects/ProjectInfo';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
@@ -72,6 +73,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/projects" element={<ProjectsList />} />
       <Route path="/projects/:id" element={<ProjectDetails />} />
+      <Route path="/projects/info/:id" element={<ProjectInfo />} />
       
       <Route path="/backlinks" element={<GlobalBacklinks />} />
 
