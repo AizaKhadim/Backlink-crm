@@ -13,6 +13,7 @@ import { db } from "../../firebase";
 import "./ProjectDetails.css";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { useUser } from "../../context/UserContext"; // ✅ Added
 
 const backlinkCategories = [
   "Guest Posting",
@@ -22,9 +23,13 @@ const backlinkCategories = [
   "Social Bookmarks",
 ];
 
-const statusOptions = ["error", "completed", "under_review"];
+const statusOptions = ["not_started","error", "completed", "under_review"];
 
 const ProjectDetails = () => {
+  const { user } = useUser(); // ✅ Added
+  const role = user?.role;    // ✅ Added
+  const canEdit = role === "admin" || role === "editor"; // ✅ Added
+
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [activeCategory, setActiveCategory] = useState("");
@@ -81,7 +86,6 @@ const ProjectDetails = () => {
           keyword: "",
           status: gl.status || "under_review",
           notes: gl.notes || "",
-          // guest posting extras
           dr: "",
           traffic: "",
           email: "",
@@ -222,7 +226,7 @@ const ProjectDetails = () => {
 
                 <th>Status</th>
                 <th>Notes</th>
-                <th>Action</th>
+                {canEdit && <th>Action</th>} {/* ✅ Only show to Admin/Editor */}
               </tr>
             </thead>
 
@@ -331,21 +335,23 @@ const ProjectDetails = () => {
                   </td>
 
                   {/* ACTIONS */}
-                  <td className="actions-col">
-                    {editingId === link.globalId ? (
-                      <>
-                        <button onClick={() => handleUpdate(link)}>💾 Save</button>
-                        <button onClick={() => setEditingId(null)}>❌ Cancel</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={() => setEditingId(link.globalId)}>✏️ Edit</button>
-                        <button className="delete-btn" onClick={() => handleDelete(link)}>
-                          🗑 Delete
-                        </button>
-                      </>
-                    )}
-                  </td>
+                  {canEdit && (
+                    <td className="actions-col">
+                      {editingId === link.globalId ? (
+                        <>
+                          <button onClick={() => handleUpdate(link)}>💾 Save</button>
+                          <button onClick={() => setEditingId(null)}>❌ Cancel</button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => setEditingId(link.globalId)}>✏️ Edit</button>
+                          <button className="delete-btn" onClick={() => handleDelete(link)}>
+                            🗑 Delete
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
