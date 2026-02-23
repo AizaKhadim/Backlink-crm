@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { collection, query, where, onSnapshot, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { useUser } from "../context/UserContext";
 import { db } from "../firebase";
-import './NotificationsPage.css';
+import './Notifications.css';
 
 const NotificationsPage = () => {
   const { role } = useUser();

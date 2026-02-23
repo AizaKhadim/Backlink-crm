@@ -72,7 +72,7 @@ const handleDeleteProject = async (project) => {
     <div className="project-list-page">
       <h2>All Projects</h2>
 
-      {(role === "admin" ) && (
+      {(role === "admin" || role === "editor") && (
         <Link to="/projects/create" className="create-project-link">
           ➕ Create New Project
         </Link>

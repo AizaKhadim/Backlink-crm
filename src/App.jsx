@@ -9,7 +9,7 @@ import {
 
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
-import NotificationsPage from './components/notifications';
+import NotificationsPage from './components/Notifications';
 import ProjectPage from './pages/Projects/ProjectPage';
 
 import Dashboard from './pages/Dashboard/Dashboard';
