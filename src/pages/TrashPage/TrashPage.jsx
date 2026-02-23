@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useUser } from "../../context/UserContext";
 import "./TrashPage.css";
@@ -14,49 +8,48 @@ const TrashPage = () => {
   const { role } = useUser();
 
   const [trashedLinks, setTrashedLinks] = useState([]);
+  const [trashedGlobalLinks, setTrashedGlobalLinks] = useState([]);
   const [trashedProjects, setTrashedProjects] = useState([]);
 
-  // 🔹 Modal state
   const [restoreTarget, setRestoreTarget] = useState(null);
-  const [restoreType, setRestoreType] = useState(null); // NEW
+  const [restoreType, setRestoreType] = useState(null);
   const [showRestoreModal, setShowRestoreModal] = useState(false);
 
-  // =====================================================
-  // 🔹 FETCH TRASH (Backlinks + Projects)
-  // =====================================================
   useEffect(() => {
     if (role !== "admin") return;
 
     const fetchTrash = async () => {
       try {
-        // ✅ backlinks trash
         const snap = await getDocs(collection(db, "backlinks_trash"));
         const trashData = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-        // project names
         const projectSnap = await getDocs(collection(db, "projects"));
         const projects = projectSnap.docs.map((doc) => ({
           id: doc.id,
           name: doc.data().title,
         }));
-        const projectMap = Object.fromEntries(
-          projects.map((p) => [p.id, p.name])
-        );
+        const projectMap = Object.fromEntries(projects.map((p) => [p.id, p.name]));
 
-        const finalData = trashData.map((link) => ({
-          ...link,
-          projectName: projectMap[link.projectId] || link.projectId,
-        }));
+        // Split project-linked vs global
+        const projectLinks = [];
+        const globalLinks = [];
 
-        setTrashedLinks(finalData);
+        trashData.forEach((link) => {
+          if (link.projectId) {
+            projectLinks.push({
+              ...link,
+              projectName: projectMap[link.projectId] || link.projectId,
+            });
+          } else {
+            globalLinks.push(link); // global backlink
+          }
+        });
 
-        // ✅ projects trash (NEW)
+        setTrashedLinks(projectLinks);
+        setTrashedGlobalLinks(globalLinks);
+
         const projSnap = await getDocs(collection(db, "projects_trash"));
-        const projData = projSnap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }));
-
+        const projData = projSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
         setTrashedProjects(projData);
       } catch (err) {
         console.error("Trash fetch error:", err);
@@ -66,118 +59,84 @@ const TrashPage = () => {
     fetchTrash();
   }, [role]);
 
-  // =====================================================
-  // 🔹 RESTORE HANDLER (SMART)
-  // =====================================================
   const handleRestore = async () => {
     if (!restoreTarget) return;
 
     try {
-      // ============================================
-      // 🔥 BACKLINK RESTORE
-      // ============================================
       if (restoreType === "backlink") {
         const link = restoreTarget;
-
-        const projectId = link.projectId;
-        const category = link.category || "Uncategorized";
         const docId = link.globalId || link.id;
 
-        if (!projectId) {
-          alert("❌ Restore failed: Project ID missing!");
-          return;
+        if (link.projectId) {
+          // project-linked
+          await setDoc(
+            doc(db, "projects", link.projectId, link.category || "Uncategorized", docId),
+            { ...link, isSaved: true, restoredAt: new Date() }
+          );
+        } else {
+          // global
+          await setDoc(doc(db, "backlinks_all", docId), { ...link, restoredAt: new Date() });
         }
-
-        await setDoc(
-          doc(db, "projects", projectId, category, docId),
-          {
-            ...link,
-            isSaved: true,
-            restoredAt: new Date(),
-          }
-        );
 
         await deleteDoc(doc(db, "backlinks_trash", link.id));
 
-        setTrashedLinks((prev) => prev.filter((l) => l.id !== link.id));
+        // remove from correct state
+        if (link.projectId) {
+          setTrashedLinks((prev) => prev.filter((l) => l.id !== link.id));
+        } else {
+          setTrashedGlobalLinks((prev) => prev.filter((l) => l.id !== link.id));
+        }
       }
 
-      // ============================================
-      // 🔥 PROJECT RESTORE (NEW)
-      // ============================================
       if (restoreType === "project") {
         const project = restoreTarget;
-
-        await setDoc(doc(db, "projects", project.id), {
-          ...project,
-          restoredAt: new Date(),
-        });
-
+        await setDoc(doc(db, "projects", project.id), { ...project, restoredAt: new Date() });
         await deleteDoc(doc(db, "projects_trash", project.id));
-
-        setTrashedProjects((prev) =>
-          prev.filter((p) => p.id !== project.id)
-        );
+        setTrashedProjects((prev) => prev.filter((p) => p.id !== project.id));
       }
 
       setShowRestoreModal(false);
       setRestoreTarget(null);
       setRestoreType(null);
-
       alert("♻️ Restored successfully!");
     } catch (err) {
-      console.error("❌ Restore failed:", err);
+      console.error("Restore failed:", err);
       alert("❌ Restore failed");
     }
   };
 
-  // =====================================================
-  // 🔹 PERMANENT DELETE
-  // =====================================================
- const handlePermanentDelete = async (item, type) => {
-  try {
-    const itemId = item?.id;
+  const handlePermanentDelete = async (item, type) => {
+    if (!item?.id) return alert("❌ Cannot delete: missing ID!");
+    if (!window.confirm("Permanently delete? This cannot be undone.")) return;
 
-    if (!itemId) {
-      alert("❌ Cannot delete: item ID missing!");
-      console.error("Delete failed — item:", item);
-      return;
+    try {
+      if (type === "backlink") {
+        await deleteDoc(doc(db, "backlinks_trash", item.id));
+        if (item.projectId) {
+          setTrashedLinks((prev) => prev.filter((l) => l.id !== item.id));
+        } else {
+          setTrashedGlobalLinks((prev) => prev.filter((l) => l.id !== item.id));
+        }
+      }
+      if (type === "project") {
+        await deleteDoc(doc(db, "projects_trash", item.id));
+        setTrashedProjects((prev) => prev.filter((p) => p.id !== item.id));
+      }
+      alert("🗑️ Permanently deleted!");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to delete.");
     }
+  };
 
-    if (!window.confirm("Permanently delete this item? This cannot be undone.")) {
-      return;
-    }
-
-    // 🔹 BACKLINK
-    if (type === "backlink") {
-      await deleteDoc(doc(db, "backlinks_trash", itemId));
-      setTrashedLinks(prev => prev.filter(i => i.id !== itemId));
-    }
-
-    // 🔹 PROJECT
-    if (type === "project") {
-      await deleteDoc(doc(db, "projects_trash", itemId));
-      setTrashedProjects(prev => prev.filter(i => i.id !== itemId));
-    }
-
-    alert("🗑️ Permanently deleted!");
-
-  } catch (error) {
-    console.error("Permanent delete error:", error);
-    alert("❌ Failed to permanently delete.");
-  }
-};
   return (
     <div className="trash-page">
       <h2>🗑 Trash</h2>
 
-      {/* ================================================= */}
-      {/* 🔥 BACKLINKS SECTION */}
-      {/* ================================================= */}
-      <h3>Trashed Backlinks</h3>
-
+      {/* Project-linked Backlinks */}
+      <h3>Trashed Backlinks (Project-linked)</h3>
       {trashedLinks.length === 0 ? (
-        <p>No trashed backlinks</p>
+        <p>No trashed project-linked backlinks</p>
       ) : (
         <div className="trash-table-wrapper">
           <table className="trash-table">
@@ -190,7 +149,6 @@ const TrashPage = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {trashedLinks.map((l) => (
                 <tr key={l.id}>
@@ -208,15 +166,8 @@ const TrashPage = () => {
                     >
                       ♻️ Restore
                     </button>
-
                     {role === "admin" && (
-                      <button
-                        onClick={() =>
-                          handlePermanentDelete(l, "backlink")
-                        }
-                      >
-                        ❌ Delete
-                      </button>
+                      <button onClick={() => handlePermanentDelete(l, "backlink")}>❌ Delete</button>
                     )}
                   </td>
                 </tr>
@@ -226,11 +177,50 @@ const TrashPage = () => {
         </div>
       )}
 
-      {/* ================================================= */}
-      {/* 🔥 PROJECTS SECTION (NEW) */}
-      {/* ================================================= */}
-      <h3 style={{ marginTop: 40 }}>Trashed Projects</h3>
+      {/* Global Backlinks */}
+      <h3 style={{ marginTop: 40 }}>Trashed Backlinks (Global)</h3>
+      {trashedGlobalLinks.length === 0 ? (
+        <p>No trashed global backlinks</p>
+      ) : (
+        <div className="trash-table-wrapper">
+          <table className="trash-table">
+            <thead>
+              <tr>
+                <th>Website</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {trashedGlobalLinks.map((l) => (
+                <tr key={l.id}>
+                  <td data-label="Website">{l.website}</td>
+                  <td data-label="Category">{l.category}</td>
+                  <td data-label="Status">{l.status}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        setRestoreTarget(l);
+                        setRestoreType("backlink");
+                        setShowRestoreModal(true);
+                      }}
+                    >
+                      ♻️ Restore
+                    </button>
+                    {role === "admin" && (
+                      <button onClick={() => handlePermanentDelete(l, "backlink")}>❌ Delete</button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
+      {/* Projects */}
+      <h3 style={{ marginTop: 40 }}>Trashed Projects</h3>
       {trashedProjects.length === 0 ? (
         <p>No trashed projects</p>
       ) : (
@@ -243,7 +233,6 @@ const TrashPage = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {trashedProjects.map((p) => (
                 <tr key={p.id}>
@@ -259,15 +248,8 @@ const TrashPage = () => {
                     >
                       ♻️ Restore
                     </button>
-
                     {role === "admin" && (
-                      <button
-                        onClick={() =>
-                          handlePermanentDelete(p, "project")
-                        }
-                      >
-                        ❌ Delete
-                      </button>
+                      <button onClick={() => handlePermanentDelete(p, "project")}>❌ Delete</button>
                     )}
                   </td>
                 </tr>
@@ -277,9 +259,6 @@ const TrashPage = () => {
         </div>
       )}
 
-      {/* ================================================= */}
-      {/* 🔹 RESTORE MODAL */}
-      {/* ================================================= */}
       {showRestoreModal && (
         <div className="modal-overlay">
           <div className="modal">

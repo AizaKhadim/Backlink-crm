@@ -1,5 +1,15 @@
 /* GlobalBacklinks.css */
+/* Bold important columns */
+.bold-cell {
+  font-weight: 600;
+}
 
+/* Optional: header styling consistency */
+.table-wrapper th:first-child,
+.table-wrapper td:first-child {
+  text-align: center;
+  width: 60px;
+}
 /* ==== Base Layout ==== */
 .global-backlinks-page {
   padding: 30px;
@@ -229,7 +239,19 @@ th {
   background-color: #f8d7da;
   color: #721c24;
 }
+.delete-btn {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
+.delete-btn:hover {
+  background: #d9363e;
+}
 /* ==== Edit Mode ==== */
 .edit-btn,
 .save-btn {

@@ -124,7 +124,7 @@ const ProjectInfo = () => {
             onChange={handleInputChange}
           />
 
-          <label className="project-form-label">Office Email</label>
+          <label className="project-form-label">Company Email</label>
           <input
             className="project-form-input"
             name="officeEmail"
@@ -217,30 +217,30 @@ const ProjectInfo = () => {
         </div>
       ) : (
         <div className="project-view-container">
-          <h3 className="project-title-display">{project.title}</h3>
+  <h3 className="project-title-display">{project.title || "—"}</h3>
 
-          <p><strong>Website:</strong> {project.website}</p>
-          {project.email && <p><strong>Email:</strong> {project.email}</p>}
-          {project.websiteURL && <p><strong>Website URL:</strong> {project.websiteURL}</p>}
-          {project.facebook && <p><strong>Facebook:</strong> {project.facebook}</p>}
-          {project.instagram && <p><strong>Instagram:</strong> {project.instagram}</p>}
-          {project.twitter && <p><strong>Twitter:</strong> {project.twitter}</p>}
-          {project.linkedin && <p><strong>LinkedIn:</strong> {project.linkedin}</p>}
-          {project.location && <p><strong>Location:</strong> {project.location}</p>}
-          {project.phone && <p><strong>Phone:</strong> {project.phone}</p>}
-          {project.zipCode && <p><strong>Zip Code:</strong> {project.zipCode}</p>}
-          {project.officeEmail && <p><strong>Office Email:</strong> {project.officeEmail}</p>}
-          {project.description && <p>{project.description}</p>}
+  <p><strong>Website:</strong> {project.website || "—"}</p>
+  <p><strong>Assignee Email:</strong> {project.email || "—"}</p>
+  <p><strong>Website URL:</strong> {project.websiteURL || "—"}</p>
+  <p><strong>Facebook:</strong> {project.facebook || "—"}</p>
+  <p><strong>Instagram:</strong> {project.instagram || "—"}</p>
+  <p><strong>Twitter:</strong> {project.twitter || "—"}</p>
+  <p><strong>LinkedIn:</strong> {project.linkedin || "—"}</p>
+  <p><strong>Location:</strong> {project.location || "—"}</p>
+  <p><strong>Phone:</strong> {project.phone || "—"}</p>
+  <p><strong>Zip Code:</strong> {project.zipCode || "—"}</p>
+  <p><strong>Company Email:</strong> {project.officeEmail || "—"}</p>
+  <p><strong>Description:</strong> {project.description || "—"}</p>
 
-          {(role === "admin" || role === "editor") && (
-            <button
-              className="project-edit-btn"
-              onClick={startEditingProject}
-            >
-              ✏️ Edit Project
-            </button>
-          )}
-        </div>
+  {(role === "admin" || role === "editor") && (
+    <button
+      className="project-edit-btn"
+      onClick={startEditingProject}
+    >
+      ✏️ Edit Project
+    </button>
+  )}
+</div>
       )}
     </div>
   );

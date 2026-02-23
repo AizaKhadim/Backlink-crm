@@ -36,6 +36,7 @@ const GlobalBacklinks = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showImportGuide, setShowImportGuide] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
 
 
   // Modal
@@ -324,12 +325,95 @@ const handleImport = async (e) => {
 };
 
   // Filtered list
-  const filtered = backlinks.filter(
+   const filtered = backlinks.filter(
     (link) =>
+      !link.deleted &&
       (activeCategory === "all" ||
         (Array.isArray(link.categories) && link.categories.includes(activeCategory))) &&
       link.website?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  // Toggle single checkbox
+const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  // Select all
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filtered.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filtered.map((l) => l.id));
+    }
+  };
+const handleDelete = async (link) => {
+  if (!window.confirm("Move to trash?")) return;
+
+  try {
+    if (!link?.id) {
+      alert("❌ Link ID missing!");
+      return;
+    }
+
+    // 🔹 Only pick needed fields
+    const linkData = {
+      website: link.website || "",
+      da: link.da || "",
+      spamScore: link.spamScore || "",
+      dr: link.dr || "",
+      traffic: link.traffic || "",
+      email: link.email || "",
+      price: link.price || "",
+      niche: link.niche || "",
+      publishedUrl: link.publishedUrl || "",
+      status: link.status || "",
+      notes: link.notes || "",
+      categories: Array.isArray(link.categories) ? link.categories : [],
+      projectId: link.projectId || null,
+      deletedAt: new Date(),
+    };
+
+    await addDoc(collection(db, "backlinks_trash"), linkData);
+
+    await updateDoc(doc(db, "backlinks_all", link.id), {
+      deleted: true,
+    });
+
+    fetchBacklinks();
+  } catch (err) {
+    console.error("❌ Failed to move backlink to trash:", err);
+    alert("❌ Failed to move backlink to trash.");
+  }
+};
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm("Delete selected backlinks?")) return;
+
+    try {
+      await Promise.all(
+        selectedIds.map(async (id) => {
+          const link = backlinks.find((l) => l.id === id);
+          if (!link) return;
+
+          await addDoc(collection(db, "backlinks_trash"), {
+            ...link,
+            deletedAt: new Date(),
+          });
+
+          await updateDoc(doc(db, "backlinks_all", id), {
+            deleted: true,
+          });
+        })
+      );
+
+      setSelectedIds([]);
+      fetchBacklinks();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="global-backlinks-page">
@@ -519,6 +603,11 @@ const handleImport = async (e) => {
         >
           {showImportGuide ? "Hide Import Guidelines" : "View Import Guidelines"}
         </button>
+            {role === "admin" && selectedIds.length > 0 && (
+      <button className="delete-btn" onClick={handleBulkDelete}>
+        Delete Selected ({selectedIds.length})
+      </button>
+    )}
 
         </div>
       )}
@@ -536,6 +625,13 @@ const handleImport = async (e) => {
       <table>
         <thead>
           <tr>
+            <th>
+            <input
+              type="checkbox"
+              checked={selectedIds.length === filtered.length && filtered.length > 0}
+              onChange={toggleSelectAll}
+            />
+          </th>
             <th>Website</th>
             <th>DA</th>
             <th>SpamScore</th>
@@ -580,7 +676,16 @@ const handleImport = async (e) => {
   <div className="table-wrapper">
     <table>
       <thead>
+       
         <tr>
+           <th>
+          <input
+             type="checkbox"
+                    checked={selectedIds.length === filtered.length && filtered.length > 0}
+                    onChange={toggleSelectAll}
+                  />
+        </th>
+          <th>Sr #</th> {/* ✅ NEW */}
           <th className="col-categories">Website</th>
 
           {activeCategory === "all" && (
@@ -610,10 +715,18 @@ const handleImport = async (e) => {
       </thead>
 
       <tbody>
-        {filtered.map((link) => (
+        {filtered.map((link ,index) => (
           <tr key={link.id}>
-            {/* Website */}
             <td>
+        <input
+          type="checkbox"
+          checked={selectedIds.includes(link.id)}
+          onChange={() => toggleSelect(link.id)}
+        />
+      </td>
+      <td>{index + 1}</td>
+            {/* Website */}
+            <td className="bold-cell">
               {editableRowId === link.id ? (
                 <input className="col-categories"
                   value={editableRowData.website || ""}
@@ -630,14 +743,36 @@ const handleImport = async (e) => {
             </td>
 
             {/* Categories (ALL tab only) */}
-            {activeCategory === "all" && (
-              <td className="col-categories">
-                {link.categories?.join(", ") || ""}
-              </td>
-            )}
+           {activeCategory === "all" && (
+  <td className="col-categories">
+    {editableRowId === link.id ? (
+      <select
+        multiple
+        value={editableRowData.categories || []}
+        onChange={(e) =>
+          setEditableRowData({
+            ...editableRowData,
+            categories: Array.from(
+              e.target.selectedOptions,
+              (opt) => opt.value
+            ),
+          })
+        }
+      >
+        {categoriesList.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
+    ) : (
+      link.categories?.join(", ")
+    )}
+  </td>
+)}
 
             {/* DA */}
-            <td>
+            <td className="bold-cell">
               {editableRowId === link.id ? (
                 <input
                   value={editableRowData.da || ""}
@@ -654,7 +789,7 @@ const handleImport = async (e) => {
             </td>
 
             {/* Spam */}
-            <td>
+            <td className="bold-cell">
               {editableRowId === link.id ? (
                 <input
                   value={editableRowData.spamScore || ""}
@@ -731,6 +866,12 @@ const handleImport = async (e) => {
                 >
                   {editableRowId === link.id ? "Save" : "Edit"}
                 </button>
+                <button
+      className="delete-btn"
+      onClick={() => handleDelete(link)}
+    >
+      Delete
+    </button>
               </td>
             )}
           </tr>
