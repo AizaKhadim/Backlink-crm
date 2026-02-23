@@ -96,7 +96,63 @@
   color: #e74c3c;
   font-weight: 600;
 }
+.notification-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.notification-bell.has-alert {
+  color: #ef4444;
+  animation: bellPulse 1.2s infinite;
+}
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: 600;
+}
+@keyframes bellPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.notification-bell {
+  color: #f97316; /* ORANGE */
+  transition: 0.2s;
+}
 
+.notification-bell:hover {
+  color: #ea580c; /* darker orange */
+}
+
+.notification-panel {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  width: 260px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  padding: 10px;
+  z-index: 999;
+}
+
+.empty-text {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+}
+.delete-request-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
 /* Responsive (Mobile) */
 @media (max-width: 768px) {
   .navbar {

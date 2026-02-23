@@ -8,14 +8,16 @@ import { FaBars, FaTimes } from 'react-icons/fa';
 import {
   collection,
   getDocs,
+  onSnapshot, query, where
 } from 'firebase/firestore';
+import { Bell } from "lucide-react"; // agar already nahi hai
 
 const categories = [
-  'guest posting',
-  'profile creation',
-  'micro blogging',
-  'directory submission',
-  'social bookmarks',
+  'Guest posting',
+  'Profile creation',
+  'Micro blogging',
+  'Directory submission',
+  'Social bookmarks',
 ];
 
 const Navbar = () => {
@@ -25,6 +27,8 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [reminders, setReminders] = useState([]);
   const [showReminderList, setShowReminderList] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [deleteRequests, setDeleteRequests] = useState([]);
 
   const handleLogout = async () => {
     try {
@@ -34,7 +38,24 @@ const Navbar = () => {
       alert('Logout failed');
     }
   };
+  useEffect(() => {
+  if (role !== "admin") return;
 
+  const q = query(
+    collection(db, "delete_requests"),
+    where("status", "==", "Pending_Admin")
+  );
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const list = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setDeleteRequests(list);
+  });
+
+  return () => unsubscribe();
+}, [role]);
   useEffect(() => {
     const fetchReminders = async () => {
       const projectsSnap = await getDocs(collection(db, 'projects'));
@@ -88,8 +109,31 @@ const Navbar = () => {
         <h3>Welcome 👋</h3>
         <p className="role-tag">{role?.toUpperCase()}</p>
       </div>
-
+      
       <div className={`navbar-right ${menuOpen ? 'open' : ''}`}>
+        {/* 🔔 DELETE REQUEST NOTIFICATIONS — ADMIN ONLY */}
+{/* 🔔 DELETE REQUEST NOTIFICATIONS — ADMIN ONLY */}
+{role === "admin" && (
+  <div className="notification-wrapper">
+    <Bell
+      size={20}
+      className={`notification-bell ${
+        deleteRequests.length > 0 ? "has-alert" : ""
+      }`}
+      onClick={() => navigate("/notifications")}
+    />
+
+    {/* 🔴 Badge */}
+    {deleteRequests.length > 0 && (
+      <span
+        className="notification-badge"
+        onClick={() => navigate("/notifications")}
+      >
+        {deleteRequests.length}
+      </span>
+    )}
+  </div>
+)}
         {reminders.length > 0 && (
           <div className="navbar-notifications">
             <button

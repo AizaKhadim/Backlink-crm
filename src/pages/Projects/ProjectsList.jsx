@@ -1,15 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import "./ProjectsList.css";
+import { doc, deleteDoc, setDoc,getDocs, collection, serverTimestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const ProjectList = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { role } = useUser();
+  const { role,user } = useUser();
+  const navigate = useNavigate();
 
+const handleDeleteProject = async (project) => {
+  if (!window.confirm("Are you sure you want to delete this project?")) return;
+
+  try {
+    if (role === "admin") {
+  const trashRef = doc(collection(db, "projects_trash"));
+  await setDoc(trashRef, {
+    ...project,
+    id: trashRef.id, // ✅ add the generated ID
+    deletedAt: serverTimestamp(),
+  });
+
+  await deleteDoc(doc(db, "projects", project.id));
+  alert("✅ Project moved to trash");
+}
+
+    if (role === "editor") {
+      await setDoc(doc(collection(db, "delete_requests")), {
+        type: "project",
+        itemId: project.id,
+        projectTitle: project.title || "Untitled",
+        requestedBy: user?.name || "Editor",
+        status: "Pending_Admin",
+        createdAt: serverTimestamp(),
+        projectData: { ...project },
+      });
+      alert("✅ Delete request sent to Admin");
+    }
+
+    setProjects(prev => prev.filter(p => p.id !== project.id));
+  } catch (error) {
+    console.error("Delete error:", error);
+    alert("❌ Failed to delete project");
+  }
+};
   // 🔹 Fetch projects from Firebase
   useEffect(() => {
     const fetchProjects = async () => {
@@ -35,7 +72,7 @@ const ProjectList = () => {
     <div className="project-list-page">
       <h2>All Projects</h2>
 
-      {(role === "admin" || role === "editor") && (
+      {(role === "admin" ) && (
         <Link to="/projects/create" className="create-project-link">
           ➕ Create New Project
         </Link>
@@ -66,7 +103,18 @@ const ProjectList = () => {
             <Link to={`/projects/${project.id}`}>
               🔗 View Backlinks
             </Link>
+            <div className="project-actions">
+              {(role === "admin" || role === "editor") && (
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteProject(project)}
+                >
+                  🗑️ Delete
+                </button>
+              )}
+            </div>
           </div>
+          
         ))
       )}
     </div>

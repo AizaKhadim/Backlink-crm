@@ -9,6 +9,7 @@ import {
 
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
+import NotificationsPage from './components/notifications';
 import ProjectPage from './pages/Projects/ProjectPage';
 
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -84,6 +85,7 @@ function AppRoutes() {
       <Route path="/goals" element={<GlobalGoals />} />
       <Route path="/inbox" element={<InboxPage />} />
       <Route path="/trash" element={<Trash />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
       
 
 

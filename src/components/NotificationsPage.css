@@ -1,0 +1,145 @@
+.notifications-page {
+  padding: 20px 30px;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+/* ================= TITLE ================= */
+
+.notifications-page h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: #888;
+  text-align: center;
+}
+
+/* ================= PROJECT CARD ================= */
+
+.delete-request-card {
+  background: #fff;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  max-width: 900px;
+}
+
+/* ================= BACKLINK TABLE → CARD STYLE ================= */
+
+.notifications-table {
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 18px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5eaf0;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+/* hide traditional table header for cleaner card feel */
+.notifications-table thead {
+  display: none;
+}
+
+/* make row behave like card */
+.notifications-table tbody tr {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+  padding: 18px 20px;
+}
+
+/* cells styling */
+.notifications-table td {
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  color: #374151;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* labels before each field */
+.notifications-table td:nth-child(1)::before { content: "Project: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(2)::before { content: "Category: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(3)::before { content: "Website: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(4)::before { content: "DA: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(5)::before { content: "Spam Score: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(6)::before { content: "Username: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(7)::before { content: "Password: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(8)::before { content: "Link: "; font-weight: 600; color:#6b7280; }
+.notifications-table td:nth-child(9)::before { content: "Notes: "; font-weight: 600; color:#6b7280; }
+
+/* actions full width */
+.notifications-table td:last-child {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+}
+
+/* ================= ACTIONS ================= */
+
+.request-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.approve-btn,
+.reject-btn {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.approve-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.approve-btn:hover {
+  background-color: #059669;
+}
+
+.reject-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.reject-btn:hover {
+  background-color: #dc2626;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .notifications-page {
+    padding: 16px;
+  }
+
+  .notifications-table tbody tr {
+    grid-template-columns: 1fr;
+  }
+
+  .notifications-table td:last-child {
+    margin-top: 14px;
+  }
+
+  .approve-btn,
+  .reject-btn {
+    width: 100%;
+  }
+}

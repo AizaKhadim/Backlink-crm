@@ -1,4 +1,32 @@
 /* ==== PROJECT LIST PAGE BASE ==== */
+.project-card {
+  position: relative;
+  padding: 15px;
+  border-radius: 10px;
+  background: #fff;
+  margin-bottom: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.project-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
 .project-list-page {
   padding: 40px 20px;
   font-family: 'Poppins', sans-serif;

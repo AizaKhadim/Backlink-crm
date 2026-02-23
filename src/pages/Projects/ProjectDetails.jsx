@@ -26,37 +26,46 @@ const backlinkCategories = [
 const statusOptions = ["not_started","error", "completed", "under_review"];
 
 const ProjectDetails = () => {
-  const { user } = useUser(); // ✅ Added
-  const role = user?.role;    // ✅ Added
-  const canEdit = role === "admin" || role === "editor"; // ✅ Added
-
+  const { user, role, loading: userLoading } = useUser();
   const { id } = useParams();
+
   const [project, setProject] = useState(null);
   const [activeCategory, setActiveCategory] = useState("");
   const [categoryLinks, setCategoryLinks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // ✅ component-level loading
   const [editingId, setEditingId] = useState(null);
 
+  // ⭐ Wait for user before fetching project
   useEffect(() => {
-    fetchProject();
-  }, [id]);
+    const fetchProject = async () => {
+      if (!user) return; // wait until user exists
 
-  const fetchProject = async () => {
-    const snap = await getDoc(doc(db, "projects", id));
-    if (snap.exists()) setProject(snap.data());
-    setLoading(false);
-  };
+      setLoading(true);
+      const snap = await getDoc(doc(db, "projects", id));
+      if (snap.exists()) setProject(snap.data());
+      setLoading(false);
+    };
+
+    fetchProject();
+  }, [id, user]);
+
+  if (userLoading) return <p>Loading user...</p>;
+  if (loading) return <p>Loading project data...</p>;
+
+  const canEdit = role === "admin" || role === "editor";
+
+  // ✅ Rest of your code for handleCategoryClick, handleChange, handleUpdate, handleDelete remains same
+  
 
   // ================= CATEGORY CLICK =================
   const handleCategoryClick = async (cat) => {
     setActiveCategory(cat);
     setLoading(true);
-
+    
     const trashSnap = await getDocs(collection(db, "backlinks_trash"));
     const trashedIds = trashSnap.docs
-      .filter((d) => d.data().projectId === id && d.data().category === cat)
-      .map((d) => d.id);
-
+  .filter((d) => d.data().projectId === id && d.data().category === cat)
+  .map((d) => d.data().globalId || d.id);
     const globalSnap = await getDocs(collection(db, "backlinks_all"));
     const globalLinks = globalSnap.docs
       .map((d) => ({ id: d.id, ...d.data() }))
@@ -100,6 +109,7 @@ const ProjectDetails = () => {
     setCategoryLinks(merged);
     setLoading(false);
   };
+  
 
   // ================= EXPORT =================
   const handleExport = () => {
@@ -161,25 +171,86 @@ const ProjectDetails = () => {
       alert("❌ Update failed");
     }
   };
+  // Add this above handleDelete or at top inside component
+const requestDelete = async (link, type = "backlink") => {
+  if (!window.confirm("Request deletion? Admin will approve.")) return;
 
-  // ================= DELETE =================
-  const handleDelete = async (link) => {
-    if (!window.confirm("Move backlink to Trash?")) return;
+  try {
+    const deleteReqRef = doc(collection(db, "delete_requests"));
 
-    try {
-      await setDoc(doc(db, "backlinks_trash", link.globalId), {
+    const payload = {
+      type: "backlink",
+
+      // 🛡️ HARD REQUIRED FIELDS
+      projectId: id,
+      itemId: link.globalId,
+      globalId: link.globalId,
+      category: activeCategory,
+
+      projectTitle: project?.title || "",
+      requestedBy: user?.name || "Editor",
+      status: "Pending_Admin",
+      createdAt: serverTimestamp(),
+
+      // ✅ FULL SNAPSHOT (VERY IMPORTANT)
+      backlinkData: {
         ...link,
         projectId: id,
         category: activeCategory,
-        deletedAt: serverTimestamp(),
-      });
-      await deleteDoc(doc(db, "projects", id, activeCategory, link.globalId));
-      setCategoryLinks((prev) => prev.filter((l) => l.globalId !== link.globalId));
-      alert("✅ Moved to Trash");
-    } catch {
-      alert("❌ Failed to move to trash");
-    }
-  };
+        globalId: link.globalId,
+      },
+    };
+
+    console.log("📨 Delete request payload:", payload);
+
+    await setDoc(deleteReqRef, payload);
+
+    alert("✅ Delete request sent to Admin for approval!");
+  } catch (err) {
+    console.error(err);
+    alert("❌ Failed to send delete request.");
+  }
+};
+  // ================= DELETE =================
+  const handleDelete = async (link) => {
+  if (!window.confirm("Move backlink to Trash?")) return;
+
+  try {
+    const trashPayload = {
+      ...link,
+
+      // 🛡️ HARD GUARANTEE FIELDS
+      projectId: id,
+      category: activeCategory,
+      globalId: link.globalId,
+
+      deletedAt: serverTimestamp(),
+    };
+
+    console.log("🗑 Sending to trash:", trashPayload);
+
+    // ✅ move to trash
+    await setDoc(
+      doc(db, "backlinks_trash", link.globalId),
+      trashPayload
+    );
+
+    // ✅ remove from project
+    await deleteDoc(
+      doc(db, "projects", id, activeCategory, link.globalId)
+    );
+
+    // ✅ update UI
+    setCategoryLinks((prev) =>
+      prev.filter((l) => l.globalId !== link.globalId)
+    );
+
+    alert("✅ Moved to Trash");
+  } catch (err) {
+    console.error("❌ Trash error:", err);
+    alert("❌ Failed to move to trash");
+  }
+};
 
   if (loading) return <p>Loading...</p>;
 
@@ -345,9 +416,18 @@ const ProjectDetails = () => {
                       ) : (
                         <>
                           <button onClick={() => setEditingId(link.globalId)}>✏️ Edit</button>
-                          <button className="delete-btn" onClick={() => handleDelete(link)}>
-                            🗑 Delete
-                          </button>
+                          {role === "admin" ? (
+                        <button className="delete-btn" onClick={() => handleDelete(link)}>
+                          🗑 Delete
+                        </button>
+                      ) : (
+                        <button
+                          className="delete-btn"
+                          onClick={() => requestDelete(link, "backlink")}
+                        >
+                          🗑 Request Delete
+                        </button>
+                      )}
                         </>
                       )}
                     </td>

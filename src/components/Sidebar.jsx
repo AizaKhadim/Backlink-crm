@@ -41,7 +41,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
   return (
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
-        {!collapsed && <h2 className="brand">🧠 Backlink CRM</h2>}
+        {!collapsed && <h2 className="brand">Menu</h2>}
 
         <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}>
           {collapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
