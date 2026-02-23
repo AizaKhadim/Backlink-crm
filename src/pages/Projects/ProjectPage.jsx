@@ -173,7 +173,7 @@ const ProjectPage = ({ existingProject = null }) => {
         <input
           type="email"
           name="officeEmail"
-          placeholder="Office Email"
+          placeholder="Offical Email"
           value={formData.officeEmail}
           onChange={handleInputChange}
         />
