@@ -112,40 +112,43 @@ const ProjectDetails = () => {
   
 
   // ================= EXPORT =================
-  const handleExport = () => {
-    if (!categoryLinks || categoryLinks.length === 0) {
-      alert("No backlinks to export!");
-      return;
+ const handleExport = () => {
+  if (!categoryLinks || categoryLinks.length === 0) {
+    alert("No backlinks to export!");
+    return;
+  }
+
+  const dataToExport = categoryLinks.map((link) => {
+    const base = {
+      Website: link.website,
+      DA: link.da,
+      Spam: link.spamScore,
+      Username: link.username, // ✅ Added
+      Password: link.password, // ✅ Added
+      Link: link.link,         // ✅ Added
+      Status: link.status,
+      Notes: link.notes,
+    };
+
+    if (activeCategory === "Guest Posting") {
+      base.DR = link.dr;
+      base.Traffic = link.traffic;
+      base.Email = link.email;
+      base.Price = link.price;
+      base.Niche = link.niche;
+      base.PublishedURL = link.publishedUrl;
     }
 
-    const dataToExport = categoryLinks.map((link) => {
-      const base = {
-        Website: link.website,
-        DA: link.da,
-        Spam: link.spamScore,
-        Status: link.status,
-        Notes: link.notes,
-      };
+    return base;
+  });
 
-      if (activeCategory === "Guest Posting") {
-        base.DR = link.dr;
-        base.Traffic = link.traffic;
-        base.Email = link.email;
-        base.Price = link.price;
-        base.Niche = link.niche;
-        base.PublishedURL = link.publishedUrl;
-      }
-
-      return base;
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Backlinks");
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, `Backlinks-${activeCategory}.xlsx`);
-  };
+  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Backlinks");
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  saveAs(blob, `Backlinks-${activeCategory}.xlsx`);
+};
 
   // ================= LOCAL CHANGE =================
   const handleChange = (idx, field, value) => {
@@ -283,6 +286,9 @@ const requestDelete = async (link, type = "backlink") => {
                 <th>Website</th>
                 <th>DA</th>
                 <th>Spam</th>
+                <th>Username</th>       {/* NEW */}
+              <th>Password</th>       {/* NEW */}
+              <th>Link</th> 
 
                 {activeCategory === "Guest Posting" && (
                   <>
@@ -307,6 +313,36 @@ const requestDelete = async (link, type = "backlink") => {
                   <td>{link.website}</td>
                   <td>{link.da}</td>
                   <td>{link.spamScore}</td>
+                  <td>
+        {editingId === link.globalId ? (
+          <input
+            value={link.username}
+            onChange={(e) => handleChange(idx, "username", e.target.value)}
+          />
+        ) : (
+          link.username || "-"
+        )}
+      </td>
+      <td>
+        {editingId === link.globalId ? (
+          <input
+            value={link.password}
+            onChange={(e) => handleChange(idx, "password", e.target.value)}
+          />
+        ) : (
+          link.password || "-"
+        )}
+      </td>
+      <td>
+        {editingId === link.globalId ? (
+          <input
+            value={link.link}
+            onChange={(e) => handleChange(idx, "link", e.target.value)}
+          />
+        ) : (
+          link.link || "-"
+        )}
+      </td>
 
                   {activeCategory === "Guest Posting" && (
                     <>
