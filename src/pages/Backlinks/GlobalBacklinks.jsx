@@ -37,6 +37,9 @@ const GlobalBacklinks = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showImportGuide, setShowImportGuide] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importReport, setImportReport] = useState([]);
+  const [showImportReport, setShowImportReport] = useState(false);
 
 
   // Modal
@@ -218,84 +221,107 @@ const GlobalBacklinks = () => {
   };
 
   // Import from Excel
-const handleImport = async (e) => {
+ const handleImport = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  const data = await file.arrayBuffer();
-  const workbook = XLSX.read(data);
-  const sheetName = workbook.SheetNames[0];
-  const worksheet = workbook.Sheets[sheetName];
+  setImportLoading(true);
+  setImportReport([]);
+  setShowImportReport(false);
+  try {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
 
-  // 👇 Header validation
-  const headers = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
+    const headers = XLSX.utils.sheet_to_json(worksheet, { header: 1 })[0];
 
-  const requiredColumns = [
-    "Website",
-    "DA",
-    "SpamScore",
-    "Notes",
-    "Status",
-    "Categories",
-  ];
+    const requiredColumns = [
+      "Website",
+      "DA",
+      "SpamScore",
+      "Notes",
+      "Status",
+      "Categories",
+    ];
 
-  const missingColumns = requiredColumns.filter(
-    (col) => !headers.includes(col)
-  );
+    const missingColumns = requiredColumns.filter(
+      (col) => !headers.includes(col)
+    );
 
-  if (missingColumns.length > 0) {
-    alert(`❌ Missing columns: ${missingColumns.join(", ")}`);
-    return;
-  }
+    if (missingColumns.length > 0) {
+      alert(`❌ Missing columns: ${missingColumns.join(", ")}`);
+      setImportLoading(false);
+      return;
+    }
 
-  // 👇 Now read rows (empty cells allowed)
-  const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+    const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-  let addedCount = 0;
-  let skippedCount = 0;
+    let addedCount = 0;
+    let skippedCount = 0;
+    const sessionWebsites = new Set();
+    const report = [];
 
-  for (const row of rows) {
-    try {
-      // Website & Categories must have value
-      if (!row.Website || !row.Categories) {
+    // 🔹 Get existing backlinks once (avoid per-row query)
+    const existingSnapshot = await getDocs(collection(db, "backlinks_all"));
+    const existingData = existingSnapshot.docs.map((doc) => doc.data());
+
+    for (const row of rows) {
+      const websiteRaw = row.Website?.toString().trim();
+
+      if (!websiteRaw) {
         skippedCount++;
+        report.push({ website: "Empty", reason: "Website missing" });
         continue;
       }
 
-      const website = row.Website.toString().trim().toLowerCase();
+      const website = websiteRaw.toLowerCase();
 
-      const categories = row.Categories
-        .toString()
+      if (!row.Categories) {
+        skippedCount++;
+        report.push({ website, reason: "Categories missing" });
+        continue;
+      }
+
+      const categories = row.Categories.toString()
         .split(",")
-        .map((c) => c.trim().toLowerCase())
-        .filter((c) => categoriesList.includes(c));
+        .map((c) => c.trim())
+        .filter((c) =>
+          categoriesList.some(
+            (valid) => valid.toLowerCase() === c.toLowerCase()
+          )
+        )
+        .map((c) =>
+          categoriesList.find(
+            (valid) => valid.toLowerCase() === c.toLowerCase()
+          )
+        );
 
       if (categories.length === 0) {
         skippedCount++;
+        report.push({ website, reason: "Invalid categories" });
         continue;
       }
 
-      // Duplicate check
-      let duplicate = false;
-      for (const cat of categories) {
-        const q = query(
-          collection(db, "backlinks_all"),
-          where("website", "==", website),
-          where("categories", "array-contains", cat)
-        );
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          duplicate = true;
-          break;
-        }
+      if (sessionWebsites.has(website)) {
+        skippedCount++;
+        report.push({ website, reason: "Duplicate in same file" });
+        continue;
       }
+
+      // 🔹 Duplicate check against existing DB
+      const duplicate = existingData.some(
+        (link) =>
+          link.website?.toLowerCase() === website &&
+          link.categories?.some((cat) => categories.includes(cat))
+      );
 
       if (duplicate) {
         skippedCount++;
+        report.push({ website, reason: "Already exists in database" });
         continue;
       }
 
-      // ✅ Add backlink
       await addDoc(collection(db, "backlinks_all"), {
         website,
         da: row.DA || "",
@@ -314,16 +340,20 @@ const handleImport = async (e) => {
       });
 
       addedCount++;
-    } catch (err) {
-      console.error("Import error:", err);
-      skippedCount++;
+      sessionWebsites.add(website);
     }
-  }
-  await fetchBacklinks();
-  e.target.value = "";
-  alert(`✅ Import finished — Added: ${addedCount}, Skipped: ${skippedCount}`);
-};
 
+    await fetchBacklinks();
+    setImportReport(report);
+    alert(`✅ Import finished — Added: ${addedCount}, Skipped: ${skippedCount}`);
+  } catch (err) {
+    console.error("Import error:", err);
+    alert("❌ Import failed");
+  }
+
+  setImportLoading(false);
+  e.target.value = "";
+};
   // Filtered list
    const filtered = backlinks.filter(
     (link) =>
@@ -419,19 +449,7 @@ const handleDelete = async (link) => {
     <div className="global-backlinks-page">
       <h2>Main Database (all websites)</h2>
 
-      {role === "admin" && (
-        <button
-          className="open-modal-btn small-center-btn"
-          onClick={() => {
-            setShowModal(true);
-            setSuccess("");
-            setError("");
-          }}
-        >
-          Add Website
-        </button>
-      )}
-
+      
       {/* Scrollable Modal */}
       {showModal && role === "admin" && (
         <div className="modal-overlay">
@@ -585,24 +603,60 @@ const handleDelete = async (link) => {
       {/* Export / Import */}
       {role === "admin" && (
         <div className="import-export-bar">
+           <button
+          className="export-btn"
+          onClick={() => {
+            setShowModal(true);
+            setSuccess("");
+            setError("");
+          }}
+        >
+          Add Website
+        </button>
           <button className="export-btn" onClick={handleExport}>
             Export
           </button>
           <label className="import-btn">
-            Import
-            <input
-              type="file"
-              accept=".xlsx, .xls"
-              style={{ display: "none" }}
-              onChange={handleImport}
-            />
-          </label>
+          {importLoading ? "Importing..." : "Import"}
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            style={{ display: "none" }}
+            onChange={handleImport}
+            disabled={importLoading}
+          />
+        </label>
           <button
           className="import-guidelines-btn"
           onClick={() => setShowImportGuide(!showImportGuide)}
         >
           {showImportGuide ? "Hide Import Guidelines" : "View Import Guidelines"}
         </button>
+        {importReport.length > 0 && (
+  <div className="import-export-bar">
+    <button
+      className="import-btn"
+      onClick={() => setShowImportReport((prev) => !prev)}
+    >
+      {showImportReport
+        ? "Hide Skipped Records"
+        : `View Skipped Records (${importReport.length})`}
+    </button>
+
+    {showImportReport && (
+      <div className="import-report">
+        <h4>Skipped Records:</h4>
+        <ul>
+          {importReport.map((r, i) => (
+            <li key={i}>
+              {r.website} — {r.reason}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+)}
             {role === "admin" && selectedIds.length > 0 && (
       <button className="delete-btn" onClick={handleBulkDelete}>
         Delete Selected ({selectedIds.length})

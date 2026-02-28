@@ -42,13 +42,36 @@
   display: flex;
   gap: 12px;
   margin: 10px 0;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .export-btn:hover,
 .import-btn:hover {
   background: linear-gradient(90deg, #0056b3, #003d80);
 }
+.import-report-wrapper {
+  margin-top: 10px;
+}
 
+.import-report-btn {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.import-report {
+  margin-top: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
 /* ==== Add Backlink Form / Modal ==== */
 .small-center-btn {
   width: fit-content;
